@@ -4,6 +4,8 @@ import (
 	"errors"
 	"github.com/Andras5014/webook/internal/domain"
 	"github.com/Andras5014/webook/internal/service"
+	"github.com/Andras5014/webook/internal/web/middleware"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -21,8 +23,8 @@ func (u *UserHandler) RegisterRouters(engine *gin.Engine) {
 	ug := engine.Group("/users")
 	ug.POST("/signup", u.SignUp)
 	ug.POST("/login", u.Login)
-	ug.POST("/edit", u.Edit)
-	ug.GET("/profile", u.Profile)
+	ug.POST("/edit", u.Edit).Use(middleware.NewLoginMiddlewareBuilder().Build())
+	ug.GET("/profile", u.Profile).Use(middleware.NewLoginMiddlewareBuilder().Build())
 }
 
 func (u *UserHandler) SignUp(ctx *gin.Context) {
@@ -72,7 +74,7 @@ func (u *UserHandler) Login(ctx *gin.Context) {
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		return
 	}
-	err := u.svc.Login(ctx, req.Email, req.Password)
+	user, err := u.svc.Login(ctx, req.Email, req.Password)
 	if errors.Is(err, service.ErrInvalidUserOrPassword) {
 		ctx.String(http.StatusOK, "用户名或者密码错误")
 		return
@@ -81,11 +83,42 @@ func (u *UserHandler) Login(ctx *gin.Context) {
 		return
 	}
 
+	// 设置session
+	sess := sessions.Default(ctx)
+	sess.Set("userId", user.Id)
+	sess.Options(sessions.Options{
+		MaxAge: 60 * 60 * 24 * 7,
+	})
+	sess.Save()
+
+	ctx.String(http.StatusOK, "登录成功")
+	return
+}
+
+func (u *UserHandler) Logout(ctx *gin.Context) {
+
+	// 设置session
+	sess := sessions.Default(ctx)
+	sess.Options(sessions.Options{
+		MaxAge: -1,
+	})
+	sess.Save()
+
 	ctx.String(http.StatusOK, "登录成功")
 	return
 }
 
 func (u *UserHandler) Edit(ctx *gin.Context) {
+	type EditReq struct {
+		NickName string `json:"nickName" binding:"required"`
+		Birthday string `json:"birthday" binding:"required"`
+		AboutMe  string `json:"aboutMe" binding:"required"`
+	}
+
+	var req EditReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		return
+	}
 
 }
 

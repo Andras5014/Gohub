@@ -7,6 +7,8 @@ import (
 	"github.com/Andras5014/webook/internal/service"
 	"github.com/Andras5014/webook/internal/web"
 	"github.com/gin-contrib/cors"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/redis"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	_ "gorm.io/driver/mysql"
@@ -46,6 +48,12 @@ func initWebServer() *gin.Engine {
 		},
 		MaxAge: 12 * time.Hour,
 	}))
+
+	store, err := redis.NewStore(16, "tcp", "127.0.0.1:6379", "", []byte("secret"), []byte("secret"))
+	if err != nil {
+		panic(err)
+	}
+	server.Use(sessions.Sessions("mysession", store))
 	return server
 }
 func initDB() *gorm.DB {
