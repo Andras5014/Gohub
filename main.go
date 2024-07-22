@@ -37,7 +37,8 @@ func initWebServer() *gin.Engine {
 	server.Use(cors.New(cors.Config{
 		AllowCredentials: true,
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
+
+		AllowHeaders: []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
 		AllowOriginFunc: func(origin string) bool {
 			fmt.Println("origin", origin)
 			//if strings.HasPrefix(origin, "http://127.0.0.1") {
@@ -46,7 +47,8 @@ func initWebServer() *gin.Engine {
 			//return strings.Contains(origin, "andras.icu")
 			return true
 		},
-		MaxAge: 12 * time.Hour,
+		MaxAge:        12 * time.Hour,
+		ExposeHeaders: []string{"x-jwt-token"},
 	}))
 
 	store, err := redis.NewStore(16, "tcp", "127.0.0.1:6379", "", []byte("secret"), []byte("secret"))
