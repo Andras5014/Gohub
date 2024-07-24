@@ -43,6 +43,12 @@ func (dao *UserDAO) FindByEmail(ctx context.Context, email string) (*User, error
 	return user, err
 }
 
+func (dao *UserDAO) FindById(ctx context.Context, id int64) (*User, error) {
+	user := &User{}
+	err := dao.db.WithContext(ctx).Where("id = ?", id).First(user).Error
+	return user, err
+}
+
 type User struct {
 	Id       int64  `gorm:"primaryKey,autoIncrement"`
 	Email    string `gorm:"unique"`
