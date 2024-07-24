@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+#  mysql使用
+  name: webook-mysql-pvc
+  labels:
+    app: webook-mysql
+
+spec:
+  storageClassName: standard
+#  一个pod读写
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+#      1GB
+      storage: 1Gi

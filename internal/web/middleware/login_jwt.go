@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/Andras5014/webook/internal/web"
+	"github.com/Andras5014/webook/internal/domain"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"log"
@@ -29,7 +29,7 @@ func (l *LoginJWTMiddlewareBuilder) Build() gin.HandlerFunc {
 			return
 		}
 		tokenStr := segs[1]
-		claims := &web.UserClaims{}
+		claims := &domain.UserClaims{}
 		token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
 			return []byte("secret"), nil
 		})
@@ -40,6 +40,10 @@ func (l *LoginJWTMiddlewareBuilder) Build() gin.HandlerFunc {
 		}
 		if !token.Valid {
 			ctx.AbortWithStatus(http.StatusUnauthorized)
+			return
+		}
+		if claims.UserAgent != ctx.Request.UserAgent() {
+			ctx.AbortWithStatus(http.StatusForbidden)
 			return
 		}
 

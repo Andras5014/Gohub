@@ -24,7 +24,7 @@ func NewUserHandler(svc *service.UserService) *UserHandler {
 func (u *UserHandler) RegisterRouters(engine *gin.Engine) {
 	ug := engine.Group("/users")
 	ug.POST("/signup", u.SignUp)
-	ug.POST("/login", u.Login)
+	ug.POST("/login", u.LoginJWT)
 	ug.POST("/edit", u.Edit).Use(middleware.NewLoginMiddlewareBuilder().Build())
 	ug.GET("/profile", u.Profile).Use(middleware.NewLoginMiddlewareBuilder().Build())
 }
@@ -118,11 +118,12 @@ func (u *UserHandler) LoginJWT(ctx *gin.Context) {
 
 	// JWT
 
-	claims := UserClaims{
+	claims := domain.UserClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 7)),
 		},
-		Uid: user.Id,
+		Uid:       user.Id,
+		UserAgent: ctx.Request.UserAgent(),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
 	tokenStr, err := token.SignedString([]byte("secret"))
@@ -162,16 +163,11 @@ func (u *UserHandler) Edit(ctx *gin.Context) {
 }
 
 func (u *UserHandler) Profile(ctx *gin.Context) {
-	c, _ := ctx.Get("claims")
-
-	claims, ok := c.(*UserClaims)
-	if !ok {
-		ctx.String(http.StatusOK, "系统错误")
-		return
-	}
-}
-
-type UserClaims struct {
-	jwt.RegisteredClaims
-	Uid int64
+	//c, _ := ctx.Get("claims")
+	//
+	//claims, ok := c.(*UserClaims)
+	//if !ok {
+	//	ctx.String(http.StatusOK, "系统错误")
+	//	return
+	//}
 }

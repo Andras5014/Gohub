@@ -2,13 +2,12 @@ package main
 
 import (
 	"fmt"
+	"github.com/Andras5014/webook/config"
 	"github.com/Andras5014/webook/internal/repository"
 	"github.com/Andras5014/webook/internal/repository/dao"
 	"github.com/Andras5014/webook/internal/service"
 	"github.com/Andras5014/webook/internal/web"
 	"github.com/gin-contrib/cors"
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/redis"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	_ "gorm.io/driver/mysql"
@@ -22,7 +21,7 @@ func main() {
 	u := initUser(db)
 	server := initWebServer()
 	u.RegisterRouters(server)
-	server.Run(":8081")
+	server.Run(":8080")
 }
 
 func initUser(db *gorm.DB) *web.UserHandler {
@@ -34,11 +33,14 @@ func initUser(db *gorm.DB) *web.UserHandler {
 }
 func initWebServer() *gin.Engine {
 	server := gin.Default()
+	//redisClient := redis.NewClient(&redis.Options{
+	//	Addr: "127.0.0.1:16379",
+	//})
+	//server.Use(ratelimit.NewBuilder(redisClient, time.Second, 100).Build())
 	server.Use(cors.New(cors.Config{
 		AllowCredentials: true,
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-
-		AllowHeaders: []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
+		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
 		AllowOriginFunc: func(origin string) bool {
 			fmt.Println("origin", origin)
 			//if strings.HasPrefix(origin, "http://127.0.0.1") {
@@ -51,15 +53,16 @@ func initWebServer() *gin.Engine {
 		ExposeHeaders: []string{"x-jwt-token"},
 	}))
 
-	store, err := redis.NewStore(16, "tcp", "127.0.0.1:6379", "", []byte("secret"), []byte("secret"))
-	if err != nil {
-		panic(err)
-	}
-	server.Use(sessions.Sessions("mysession", store))
+	//session
+	//store, err := redis.NewStore(16, "tcp", "127.0.0.1:16379", "", []byte("secret"), []byte("secret"))
+	//if err != nil {
+	//	panic(err)
+	//}
+	//server.Use(sessions.Sessions("mysession", store))
 	return server
 }
 func initDB() *gorm.DB {
-	db, err := gorm.Open(mysql.Open("root:root@tcp(127.0.0.1:13306)/webook"))
+	db, err := gorm.Open(mysql.Open(config.Config.DB.DSN))
 	if err != nil {
 		panic(err)
 	}
