@@ -5,7 +5,7 @@ metadata:
   labels:
     app: webook-redis
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: webook-redis

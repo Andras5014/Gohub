@@ -1,7 +1,7 @@
 -- 1, 2, 3, 4, 5, 6, 7 这是你的元素
 -- ZREMRANGEBYSCORE key1 0 6
 -- 7 执行完之后
-
+-- 限流
 -- 限流对象
 local key = KEYS[1]
 -- 窗口大小

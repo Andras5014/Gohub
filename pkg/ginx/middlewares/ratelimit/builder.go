@@ -10,6 +10,7 @@ import (
 	"time"
 )
 
+// Builder 滑动窗口
 type Builder struct {
 	prefix   string
 	cmd      redis.Cmdable
