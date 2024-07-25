@@ -1,6 +1,8 @@
 package tencent
 
 import (
+	"errors"
+	mysms "github.com/Andras5014/webook/internal/service/sms"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 	sms "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/sms/v20210111"
@@ -45,9 +47,16 @@ func TestService_Send(t *testing.T) {
 		},
 	}
 	for _, tc := range testCases {
+		args := make([]mysms.NamedArg, len(tc.params))
+		for _, param := range tc.params {
+			args = append(args, mysms.NamedArg{
+				Name:  "code",
+				Value: param,
+			})
+		}
 		t.Run(tc.name, func(t *testing.T) {
-			err := s.Send(nil, tc.tplId, tc.params, tc.numbers...)
-			if err != tc.wantErr {
+			err := s.Send(nil, tc.tplId, args, tc.numbers...)
+			if !errors.Is(err, tc.wantErr) {
 				t.Fatalf("want %v, got %v", tc.wantErr, err)
 			}
 		})
