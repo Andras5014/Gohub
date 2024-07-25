@@ -19,5 +19,5 @@ spec:
                 port:
                   number: 81
             pathType: Prefix
-            path: /
+            path: /x
                 

@@ -10,5 +10,5 @@ spec:
       port: 13306
       targetPort: 3306
       nodePort: 30001
-  type: NodePort
+  type: LoadBalancer
   
