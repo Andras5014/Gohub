@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"github.com/Andras5014/webook/config"
 	"github.com/Andras5014/webook/internal/repository"
 	"github.com/Andras5014/webook/internal/repository/cache"
 	"github.com/Andras5014/webook/internal/repository/dao"
@@ -12,7 +11,6 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
-	"gorm.io/driver/mysql"
 	_ "gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"time"
@@ -20,17 +18,13 @@ import (
 
 func main() {
 
-	db := initDB()
-	rdb := initRedis()
-	u := initUser(db, rdb)
-	server := initWebServer()
-	u.RegisterRouters(server)
+	server := InitWebServer()
 	server.Run(":8080")
 }
 
 func initUser(db *gorm.DB, rdb redis.Cmdable) *web.UserHandler {
 	userDao := dao.NewUserDAO(db)
-	userCache := cache.NewUserCache(nil, time.Minute)
+	userCache := cache.NewUserCache(rdb)
 	codeCache := cache.NewCodeCache(rdb)
 
 	userRepo := repository.NewUserRepository(userDao, userCache)
@@ -70,22 +64,4 @@ func initWebServer() *gin.Engine {
 	//}
 	//server.Use(sessions.Sessions("mysession", store))
 	return server
-}
-func initDB() *gorm.DB {
-	db, err := gorm.Open(mysql.Open(config.Config.DB.DSN))
-	if err != nil {
-		panic(err)
-	}
-
-	err = dao.InitTable(db)
-	if err != nil {
-		panic(err)
-	}
-	return db
-}
-
-func initRedis() redis.Cmdable {
-	return redis.NewClient(&redis.Options{
-		Addr: config.Config.Redis.Addr,
-	})
 }

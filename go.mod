@@ -3,9 +3,8 @@ module github.com/Andras5014/webook
 go 1.22.4
 
 require (
-	github.com/alibabacloud-go/darabonba-openapi v0.1.14
+	github.com/alibabacloud-go/darabonba-openapi/v2 v2.0.8
 	github.com/alibabacloud-go/dysmsapi-20170525/v4 v4.0.0
-	github.com/alibabacloud-go/dysmsapi-20180501 v1.0.3
 	github.com/alibabacloud-go/tea v1.2.1
 	github.com/ecodeclub/ekit v0.0.9
 	github.com/gin-contrib/cors v1.7.2
@@ -13,6 +12,7 @@ require (
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-sql-driver/mysql v1.7.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
+	github.com/google/wire v0.6.0
 	github.com/redis/go-redis/v9 v9.6.0
 	github.com/stretchr/testify v1.9.0
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.970
@@ -24,7 +24,6 @@ require (
 
 require (
 	github.com/alibabacloud-go/alibabacloud-gateway-spi v0.0.4 // indirect
-	github.com/alibabacloud-go/darabonba-openapi/v2 v2.0.8 // indirect
 	github.com/alibabacloud-go/debug v0.0.0-20190504072949-9472017b5c68 // indirect
 	github.com/alibabacloud-go/endpoint-util v1.1.0 // indirect
 	github.com/alibabacloud-go/openapi-util v0.1.0 // indirect
