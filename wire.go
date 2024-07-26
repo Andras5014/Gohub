@@ -31,7 +31,7 @@ func InitWebServer() *gin.Engine {
 		ioc.InitSmsService,
 
 		web.NewUserHandler,
-		ioc.InitGin,
+		ioc.InitWebServer,
 		ioc.InitMiddlewares,
 	)
 	return new(gin.Engine)

@@ -3,19 +3,19 @@ package tencent
 import (
 	"context"
 	"fmt"
-	mysms "github.com/Andras5014/webook/internal/service/sms"
+	sms "github.com/Andras5014/webook/internal/service/sms"
 	"github.com/ecodeclub/ekit"
 	"github.com/ecodeclub/ekit/slice"
-	sms "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/sms/v20210111"
+	tencentSms "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/sms/v20210111"
 )
 
 type Service struct {
 	appId    *string
 	signName *string
-	client   *sms.Client
+	client   *tencentSms.Client
 }
 
-func NewService(client *sms.Client, appId string, signName string) *Service {
+func NewService(client *tencentSms.Client, appId string, signName string) sms.Service {
 	return &Service{
 		client:   client,
 		appId:    ekit.ToPtr[string](appId),
@@ -23,13 +23,13 @@ func NewService(client *sms.Client, appId string, signName string) *Service {
 	}
 }
 
-func (s *Service) Send(ctx context.Context, tpl string, args []mysms.NamedArg, numbers ...string) error {
+func (s *Service) Send(ctx context.Context, tpl string, args []sms.NamedArg, numbers ...string) error {
 	templateParamSet := make([]*string, len(args))
 	for _, arg := range args {
 		templateParamSet = append(templateParamSet, ekit.ToPtr[string](arg.Value))
 	}
 
-	req := sms.NewSendSmsRequest()
+	req := tencentSms.NewSendSmsRequest()
 	req.SmsSdkAppId = s.appId
 	req.SignName = s.signName
 	req.TemplateId = ekit.ToPtr[string](tpl)

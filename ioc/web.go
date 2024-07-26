@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func InitGin(mdls []gin.HandlerFunc, hdl *web.UserHandler) *gin.Engine {
+func InitWebServer(mdls []gin.HandlerFunc, hdl *web.UserHandler) *gin.Engine {
 	server := gin.Default()
 	server.Use(mdls...)
 	hdl.RegisterRouters(server)

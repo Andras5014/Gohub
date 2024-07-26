@@ -8,7 +8,7 @@ import (
 
 type Service struct{}
 
-func NewService() *Service {
+func NewService() sms.Service {
 	return &Service{}
 }
 func (s *Service) Send(ctx context.Context, tpl string, args []sms.NamedArg, numbers ...string) error {

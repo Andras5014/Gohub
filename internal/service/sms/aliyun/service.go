@@ -15,7 +15,7 @@ type Service struct {
 	client   *dysmsapi.Client
 }
 
-func NewService(client *dysmsapi.Client, signName string) *Service {
+func NewService(client *dysmsapi.Client, signName string) sms.Service {
 	return &Service{
 		client:   client,
 		signName: signName,
