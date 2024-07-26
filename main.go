@@ -4,11 +4,14 @@ import (
 	"fmt"
 	"github.com/Andras5014/webook/config"
 	"github.com/Andras5014/webook/internal/repository"
+	"github.com/Andras5014/webook/internal/repository/cache"
 	"github.com/Andras5014/webook/internal/repository/dao"
 	"github.com/Andras5014/webook/internal/service"
+	"github.com/Andras5014/webook/internal/service/sms/memory"
 	"github.com/Andras5014/webook/internal/web"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/driver/mysql"
 	_ "gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -18,18 +21,25 @@ import (
 func main() {
 
 	db := initDB()
-	u := initUser(db)
+	rdb := initRedis()
+	u := initUser(db, rdb)
 	server := initWebServer()
 	u.RegisterRouters(server)
 	server.Run(":8080")
 }
 
-func initUser(db *gorm.DB) *web.UserHandler {
-	ud := dao.NewUserDAO(db)
-	repo := repository.NewUserRepository(ud)
-	svc := service.NewUserService(repo)
-	uh := web.NewUserHandler(svc)
-	return uh
+func initUser(db *gorm.DB, rdb redis.Cmdable) *web.UserHandler {
+	userDao := dao.NewUserDAO(db)
+	userCache := cache.NewUserCache(nil, time.Minute)
+	codeCache := cache.NewCodeCache(rdb)
+
+	userRepo := repository.NewUserRepository(userDao, userCache)
+	codeRepo := repository.NewCodeRepository(codeCache)
+	userSvc := service.NewUserService(userRepo)
+	smsSvc := memory.NewService()
+	codeSvc := service.NewCodeService(codeRepo, smsSvc)
+	userHandler := web.NewUserHandler(userSvc, codeSvc)
+	return userHandler
 }
 func initWebServer() *gin.Engine {
 	server := gin.Default()
@@ -72,4 +82,10 @@ func initDB() *gorm.DB {
 		panic(err)
 	}
 	return db
+}
+
+func initRedis() redis.Cmdable {
+	return redis.NewClient(&redis.Options{
+		Addr: config.Config.Redis.Addr,
+	})
 }

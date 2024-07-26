@@ -13,20 +13,48 @@ import (
 )
 
 type UserHandler struct {
-	svc *service.UserService
+	svc     *service.UserService
+	codeSvc *service.CodeService
 }
 
-func NewUserHandler(svc *service.UserService) *UserHandler {
+func NewUserHandler(svc *service.UserService, codeSvc *service.CodeService) *UserHandler {
 	return &UserHandler{
-		svc: svc,
+		svc:     svc,
+		codeSvc: codeSvc,
 	}
 }
 func (u *UserHandler) RegisterRouters(engine *gin.Engine) {
 	ug := engine.Group("/users")
 	ug.POST("/signup", u.SignUp)
 	ug.POST("/login", u.LoginJWT)
-	ug.POST("/edit", u.Edit).Use(middleware.NewLoginMiddlewareBuilder().Build())
-	ug.GET("/profile", u.Profile).Use(middleware.NewLoginMiddlewareBuilder().Build())
+	ug.POST("/edit", u.Edit).Use(middleware.NewLoginJWTMiddlewareBuilder().Build())
+	ug.GET("/profile", u.Profile).Use(middleware.NewLoginJWTMiddlewareBuilder().Build())
+	ug.POST("login_sms/code/send", u.SendLoginSMSCode)
+	ug.POST("/login_sms", u.LoginSms)
+}
+
+func (u *UserHandler) LoginSms(ctx *gin.Context) {
+}
+func (u *UserHandler) SendLoginSMSCode(ctx *gin.Context) {
+	type LoginReq struct {
+		Phone string `json:"phone" binding:"required"`
+	}
+	const biz = "login"
+	var req LoginReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(400, gin.H{
+			"code": 400,
+			"msg":  "参数错误",
+		})
+		return
+	}
+	if err := u.codeSvc.Send(ctx, biz, req.Phone); err != nil {
+		ctx.JSON(400, gin.H{
+			"code": 400,
+			"msg":  "发送短信验证码失败",
+		})
+	}
+	ctx.String(http.StatusOK, "发送成功")
 }
 
 func (u *UserHandler) SignUp(ctx *gin.Context) {
