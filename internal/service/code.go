@@ -10,6 +10,9 @@ import (
 
 const codeTplId = "SMS_468975799"
 
+var ErrCodeVerifyTooManyTimes = repository.ErrCodeVerifyTooManyTimes
+var ErrCodeSendTooMany = repository.ErrCodeSendTooMany
+
 type CodeService struct {
 	repo   *repository.CodeRepository
 	smsSvc sms.Service

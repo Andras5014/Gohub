@@ -2,6 +2,7 @@ package dao
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"github.com/go-sql-driver/mysql"
 	"gorm.io/gorm"
@@ -22,11 +23,11 @@ func NewUserDAO(db *gorm.DB) *UserDAO {
 		db: db,
 	}
 }
-func (dao *UserDAO) Insert(ctx context.Context, user *User) error {
+func (dao *UserDAO) Insert(ctx context.Context, user User) error {
 	now := time.Now().UnixMilli()
 	user.CreatedAt = now
 	user.UpdatedAt = now
-	err := dao.db.WithContext(ctx).Create(user).Error
+	err := dao.db.WithContext(ctx).Create(&user).Error
 	var mysqlErr *mysql.MySQLError
 	if errors.As(err, &mysqlErr) {
 		const uniqueConflictErrNo uint16 = 1062
@@ -49,10 +50,17 @@ func (dao *UserDAO) FindById(ctx context.Context, id int64) (*User, error) {
 	return user, err
 }
 
+func (dao *UserDAO) FindByPhone(ctx context.Context, phone string) (*User, error) {
+	user := &User{}
+	err := dao.db.WithContext(ctx).Where("phone = ?", phone).First(user).Error
+	return user, err
+}
+
 type User struct {
-	Id       int64  `gorm:"primaryKey,autoIncrement"`
-	Email    string `gorm:"unique"`
+	Id       int64          `gorm:"primaryKey,autoIncrement"`
+	Email    sql.NullString `gorm:"unique"`
 	Password string
+	Phone    sql.NullString `gorm:"unique"`
 
 	CreatedAt int64
 	UpdatedAt int64

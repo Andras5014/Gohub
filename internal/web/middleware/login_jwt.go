@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"github.com/Andras5014/webook/internal/domain"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"log"
@@ -29,7 +28,7 @@ func (l *LoginJWTMiddlewareBuilder) Build() gin.HandlerFunc {
 			return
 		}
 		tokenStr := segs[1]
-		claims := &domain.UserClaims{}
+		claims := &UserClaims{}
 		token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
 			return []byte("secret"), nil
 		})
@@ -57,4 +56,10 @@ func (l *LoginJWTMiddlewareBuilder) Build() gin.HandlerFunc {
 		ctx.Set("claims", claims)
 	}
 
+}
+
+type UserClaims struct {
+	jwt.RegisteredClaims
+	Uid       int64
+	UserAgent string
 }
