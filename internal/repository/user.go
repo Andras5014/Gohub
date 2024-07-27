@@ -20,6 +20,7 @@ type UserRepository interface {
 	FindByEmail(ctx context.Context, email string) (domain.User, error)
 	FindById(ctx context.Context, id int64) (domain.User, error)
 	FindByPhone(ctx context.Context, phone string) (domain.User, error)
+	Update(ctx context.Context, u domain.User) error
 }
 
 type CacheUserRepository struct {
@@ -92,21 +93,29 @@ func (r *CacheUserRepository) FindByPhone(ctx context.Context, phone string) (do
 	return r.entityToDomain(user), nil
 }
 
+func (r *CacheUserRepository) Update(ctx context.Context, u domain.User) error {
+	return r.dao.Update(ctx, r.domainToEntity(&u))
+}
 func (r *CacheUserRepository) entityToDomain(user *dao.User) domain.User {
 	return domain.User{
-		Id:       user.Id,
-		Email:    user.Email.String,
-		Phone:    user.Phone.String,
-		Password: user.Password,
-		CreateAt: time.UnixMilli(user.CreatedAt),
+		Id:        user.Id,
+		Email:     user.Email.String,
+		Phone:     user.Phone.String,
+		Password:  user.Password,
+		NickName:  user.NickName.String,
+		AboutMe:   user.AboutMe.String,
+		Birthday:  time.UnixMilli(user.Birthday.Int64),
+		CreatedAt: time.UnixMilli(user.CreatedAt.Int64),
 	}
 }
 func (r *CacheUserRepository) domainToEntity(user *domain.User) dao.User {
 	return dao.User{
-		Id:        user.Id,
-		Email:     sql.NullString{String: user.Email, Valid: user.Email != ""},
-		Phone:     sql.NullString{String: user.Phone, Valid: user.Phone != ""},
-		Password:  user.Password,
-		CreatedAt: user.CreateAt.UnixMilli(),
+		Id:       user.Id,
+		Email:    sql.NullString{String: user.Email, Valid: user.Email != ""},
+		Phone:    sql.NullString{String: user.Phone, Valid: user.Phone != ""},
+		Password: user.Password,
+		NickName: sql.NullString{String: user.NickName, Valid: user.NickName != ""},
+		AboutMe:  sql.NullString{String: user.AboutMe, Valid: user.AboutMe != ""},
+		Birthday: sql.NullInt64{Int64: user.Birthday.UnixMilli(), Valid: user.Birthday.UnixMilli() != 0},
 	}
 }

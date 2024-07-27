@@ -5,7 +5,6 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"log"
 	"net/http"
-	"strings"
 	"time"
 )
 
@@ -22,12 +21,13 @@ func (l *LoginJWTMiddlewareBuilder) Build() gin.HandlerFunc {
 			ctx.Status(http.StatusUnauthorized)
 			return
 		}
-		segs := strings.SplitN(tokenHeader, " ", 2)
-		if len(segs) != 2 || segs[0] != "Bearer" {
-			ctx.AbortWithStatus(http.StatusUnauthorized)
-			return
-		}
-		tokenStr := segs[1]
+		//segs := strings.SplitN(tokenHeader, " ", 2)
+		//fmt.Println(segs)
+		//if len(segs) != 2 || segs[0] != "Bearer" {
+		//	ctx.AbortWithStatus(http.StatusUnauthorized)
+		//	return
+		//}
+		tokenStr := tokenHeader
 		claims := &UserClaims{}
 		token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
 			return []byte("secret"), nil
@@ -54,6 +54,7 @@ func (l *LoginJWTMiddlewareBuilder) Build() gin.HandlerFunc {
 		}
 		ctx.Header("x-jwt-token", tokenStr)
 		ctx.Set("claims", claims)
+		ctx.Set("userId", claims.Uid)
 	}
 
 }

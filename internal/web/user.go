@@ -31,8 +31,8 @@ func (u *UserHandler) RegisterRouters(engine *gin.Engine) {
 	ug := engine.Group("/users")
 	ug.POST("/signup", u.SignUp)
 	ug.POST("/login", u.LoginJWT)
-	ug.POST("/edit", u.Edit).Use(middleware.NewLoginJWTMiddlewareBuilder().Build())
-	ug.GET("/profile", u.Profile).Use(middleware.NewLoginJWTMiddlewareBuilder().Build())
+	ug.POST("/edit", middleware.NewLoginJWTMiddlewareBuilder().Build(), u.Edit)
+	ug.GET("/profile", middleware.NewLoginJWTMiddlewareBuilder().Build(), u.ProfileJWT)
 	ug.POST("login_sms/code/send", u.SendLoginSMSCode)
 	ug.POST("/login_sms", u.LoginSms)
 }
@@ -44,15 +44,15 @@ func (u *UserHandler) LoginSms(ctx *gin.Context) {
 	}
 	var req LoginReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(400, gin.H{
-			"code": 400,
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": http.StatusOK,
 			"msg":  "参数错误",
 		})
 		return
 	}
 	if ok, err := u.codeSvc.Verify(ctx, biz, req.Code, req.Phone); err != nil || !ok {
-		ctx.JSON(400, gin.H{
-			"code": 400,
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": http.StatusOK,
 			"msg":  "验证码错误",
 		})
 		return
@@ -79,8 +79,8 @@ func (u *UserHandler) SendLoginSMSCode(ctx *gin.Context) {
 
 	var req LoginReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(400, gin.H{
-			"code": 400,
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": http.StatusOK,
 			"msg":  "参数错误",
 		})
 		return
@@ -116,15 +116,15 @@ func (u *UserHandler) SignUp(ctx *gin.Context) {
 	}
 	var req SignUpForm
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(400, gin.H{
-			"code": 400,
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": http.StatusOK,
 			"msg":  "参数错误",
 		})
 		return
 	}
 	if req.Password != req.ConfirmPassword {
-		ctx.JSON(400, gin.H{
-			"code": 400,
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": http.StatusOK,
 			"msg":  "两次密码不一致",
 		})
 		return
@@ -135,13 +135,13 @@ func (u *UserHandler) SignUp(ctx *gin.Context) {
 		Password: req.Password,
 	})
 	if errors.Is(err, service.ErrUserDuplicateEmail) {
-		ctx.JSON(400, gin.H{
-			"code": 400,
+		ctx.JSON(http.StatusOK, gin.H{
+			"code": http.StatusOK,
 			"msg":  "邮箱冲突",
 		})
 		return
 	}
-	ctx.String(200, "注册成功")
+	ctx.String(http.StatusOK, "注册成功")
 
 }
 
@@ -247,14 +247,46 @@ func (u *UserHandler) Edit(ctx *gin.Context) {
 		return
 	}
 
+	uc := ctx.MustGet("claims").(*middleware.UserClaims)
+	birthday, err := time.Parse("2006-01-02", req.Birthday)
+	if err != nil {
+		ctx.String(http.StatusOK, "系统错误")
+		return
+	}
+	err = u.svc.UpdateNonSensitiveInfo(ctx, domain.User{
+		Id:       uc.Uid,
+		NickName: req.NickName,
+		Birthday: birthday,
+		AboutMe:  req.AboutMe,
+	})
+	if err != nil {
+		ctx.String(http.StatusOK, "系统错误")
+		return
+	}
+	ctx.String(http.StatusOK, "修改成功")
+
 }
 
-func (u *UserHandler) Profile(ctx *gin.Context) {
-	//c, _ := ctx.Get("claims")
-	//
-	//claims, ok := c.(*UserClaims)
-	//if !ok {
-	//	ctx.String(http.StatusOK, "系统错误")
-	//	return
-	//}
+func (u *UserHandler) ProfileJWT(ctx *gin.Context) {
+	type ProfileResp struct {
+		Email    string
+		NickName string
+		AboutMe  string
+		Birthday string
+		Phone    string
+	}
+
+	uc := ctx.MustGet("claims").(*middleware.UserClaims)
+	user, err := u.svc.Profile(ctx, uc.Uid)
+	if err != nil {
+		ctx.String(http.StatusOK, "系统错误")
+		return
+	}
+	ctx.JSON(http.StatusOK, ProfileResp{
+		Email:    user.Email,
+		NickName: user.NickName,
+		AboutMe:  user.AboutMe,
+		Birthday: user.Birthday.Format("2006-01-02"),
+		Phone:    user.Phone,
+	})
 }

@@ -5,9 +5,12 @@ import (
 )
 
 type User struct {
-	Id       int64
-	Email    string `json:"email"`
-	Phone    string `json:"phone"`
-	Password string `json:"password"`
-	CreateAt time.Time
+	Id        int64
+	Email     string
+	NickName  string
+	Phone     string
+	Password  string
+	AboutMe   string
+	Birthday  time.Time
+	CreatedAt time.Time
 }

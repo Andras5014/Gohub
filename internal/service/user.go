@@ -18,6 +18,7 @@ type UserService interface {
 	Login(ctx context.Context, email string, password string) (domain.User, error)
 	Profile(ctx context.Context, id int64) (domain.User, error)
 	FindOrCreate(ctx context.Context, phone string) (domain.User, error)
+	UpdateNonSensitiveInfo(ctx context.Context, u domain.User) error
 }
 type userService struct {
 	repo repository.UserRepository
@@ -53,9 +54,9 @@ func (svc *userService) Login(ctx context.Context, email string, password string
 	return user, nil
 }
 
-//	func (svc *userService) Edit(ctx context.Context, u domain.User) error {
-//		return svc.repo.Update(ctx, u)
-//	}
+func (svc *userService) UpdateNonSensitiveInfo(ctx context.Context, u domain.User) error {
+	return svc.repo.Update(ctx, u)
+}
 func (svc *userService) Profile(ctx context.Context, id int64) (domain.User, error) {
 	return svc.repo.FindById(ctx, id)
 }
