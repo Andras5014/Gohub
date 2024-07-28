@@ -6,7 +6,6 @@ import (
 	"github.com/Andras5014/webook/internal/domain"
 	"github.com/Andras5014/webook/internal/repository/cache"
 	"github.com/Andras5014/webook/internal/repository/dao"
-	"log"
 	"time"
 )
 
@@ -78,10 +77,10 @@ func (r *CacheUserRepository) FindById(ctx context.Context, id int64) (domain.Us
 		return domain.User{}, err
 	}
 	u := r.entityToDomain(ue)
-	err = r.cache.Set(ctx, u)
-	if err != nil {
-		log.Println("redis set err", err)
-	}
+	_ = r.cache.Set(ctx, u)
+	//if err != nil {
+	//	log.Println("redis set err", err)
+	//}
 	return u, nil
 }
 

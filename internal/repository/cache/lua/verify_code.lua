@@ -9,7 +9,7 @@ local cntKey = key .. ':cnt'
 local cnt = tonumber(redis.call('get', cntKey))
 local code = redis.call('get', key)
 
-if cnt <= 0 then
+if cnt == nil or cnt <= 0 then
     return -1
 end
 
