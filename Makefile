@@ -13,4 +13,5 @@ mock:
 	@mockgen -source=./internal/repository/user.go -destination=./internal/repository/mocks/user.go -package=repomocks
 	@mockgen -source=./internal/repository/dao/user.go -destination=./internal/repository/dao/mocks/user.go -package=daomocks
 	@mockgen -source=./internal/repository/cache/user.go -destination=./internal/repository/cache/mocks/user.go -package=cachemocks
+	@mockgen  -package=redismocks -destination=./internal/repository/cache/redismocks/cmdable.go github.com/redis/go-redis/v9 Cmdable
 	@go mod tidy

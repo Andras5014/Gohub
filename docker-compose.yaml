@@ -22,5 +22,6 @@ services:
     image: bitnami/etcd:latest
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
+      - ALLOW_NONE_AUTHENTICATION=yes
     ports:
       - "12379:2379"

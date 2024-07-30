@@ -3,6 +3,7 @@ module github.com/Andras5014/webook
 go 1.22.4
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/alibabacloud-go/darabonba-openapi/v2 v2.0.8
 	github.com/alibabacloud-go/dysmsapi-20170525/v4 v4.0.0
 	github.com/alibabacloud-go/tea v1.2.1
