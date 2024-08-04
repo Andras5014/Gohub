@@ -23,7 +23,7 @@ func NewService(client *tencentSms.Client, appId string, signName string) sms.Se
 	}
 }
 
-func (s *Service) Send(ctx context.Context, tpl string, args []sms.NamedArg, numbers ...string) error {
+func (s *Service) Send(ctx context.Context, tplToken string, args []sms.NamedArg, numbers ...string) error {
 	templateParamSet := make([]*string, len(args))
 	for _, arg := range args {
 		templateParamSet = append(templateParamSet, ekit.ToPtr[string](arg.Value))
@@ -32,7 +32,7 @@ func (s *Service) Send(ctx context.Context, tpl string, args []sms.NamedArg, num
 	req := tencentSms.NewSendSmsRequest()
 	req.SmsSdkAppId = s.appId
 	req.SignName = s.signName
-	req.TemplateId = ekit.ToPtr[string](tpl)
+	req.TemplateId = ekit.ToPtr[string](tplToken)
 	req.PhoneNumberSet = s.toStringPtrSlice(numbers)
 	req.TemplateParamSet = templateParamSet
 	resp, err := s.client.SendSms(req)

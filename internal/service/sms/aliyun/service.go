@@ -21,12 +21,12 @@ func NewService(client *dysmsapi.Client, signName string) sms.Service {
 		signName: signName,
 	}
 }
-func (s *Service) Send(ctx context.Context, tpl string, args []sms.NamedArg, numbers ...string) error {
+func (s *Service) Send(ctx context.Context, tplToken string, args []sms.NamedArg, numbers ...string) error {
 
 	request := &dysmapi.SendSmsRequest{}
 	request.SetPhoneNumbers(s.formatPhoneNumbers(numbers))
 	request.SetSignName(s.signName)
-	request.SetTemplateCode(tpl)
+	request.SetTemplateCode(tplToken)
 	paramMap := make(map[string]string, len(args))
 	for _, arg := range args {
 		paramMap[arg.Name] = arg.Value

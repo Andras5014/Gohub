@@ -18,7 +18,7 @@ func NewLimitSmsService(svc sms.Service, limiter ratelimit.Limiter) sms.Service 
 		limiter: limiter,
 	}
 }
-func (s *LimitSmsService) Send(ctx context.Context, tpl string, args []sms.NamedArg, numbers ...string) error {
+func (s *LimitSmsService) Send(ctx context.Context, tplToken string, args []sms.NamedArg, numbers ...string) error {
 	limited, err := s.limiter.Limit(ctx, "sms:aliyun")
 	if err != nil {
 		return fmt.Errorf("限流出现问题: %w", err)
@@ -26,6 +26,6 @@ func (s *LimitSmsService) Send(ctx context.Context, tpl string, args []sms.Named
 	if limited {
 		return fmt.Errorf("触发限流")
 	}
-	err = s.svc.Send(ctx, tpl, args, numbers...)
+	err = s.svc.Send(ctx, tplToken, args, numbers...)
 	return err
 }

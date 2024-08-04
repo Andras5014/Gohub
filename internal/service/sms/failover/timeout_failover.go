@@ -25,7 +25,7 @@ func NewTimeoutFailoverSmsService(svcs []sms.Service) *TimeoutFailoverSmsService
 	}
 }
 
-func (f *TimeoutFailoverSmsService) Send(ctx context.Context, tpl string, args []sms.NamedArg, numbers ...string) error {
+func (f *TimeoutFailoverSmsService) Send(ctx context.Context, tplToken string, args []sms.NamedArg, numbers ...string) error {
 	idx := atomic.LoadInt32(&f.idx)
 	cnt := atomic.LoadInt32(&f.cnt)
 
@@ -39,7 +39,7 @@ func (f *TimeoutFailoverSmsService) Send(ctx context.Context, tpl string, args [
 	}
 
 	svc := f.svcs[idx]
-	err := svc.Send(ctx, tpl, args, numbers...)
+	err := svc.Send(ctx, tplToken, args, numbers...)
 	switch err {
 	case context.DeadlineExceeded:
 		atomic.AddInt32(&f.cnt, 1)
