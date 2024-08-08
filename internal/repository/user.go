@@ -20,6 +20,7 @@ type UserRepository interface {
 	FindById(ctx context.Context, id int64) (domain.User, error)
 	FindByPhone(ctx context.Context, phone string) (domain.User, error)
 	Update(ctx context.Context, u domain.User) error
+	FindByWechat(ctx context.Context, openId string) (domain.User, error)
 }
 
 type CacheUserRepository struct {
@@ -33,8 +34,16 @@ func NewUserRepository(dao dao.UserDAO, cache cache.UserCache) UserRepository {
 		cache: cache,
 	}
 }
+func (r *CacheUserRepository) FindByWechat(ctx context.Context, openId string) (domain.User, error) {
+	user, err := r.dao.FindByWechat(ctx, openId)
+	if err != nil {
+		return domain.User{}, err
+	}
+	return r.entityToDomain(user), nil
+}
+
 func (r *CacheUserRepository) Create(ctx context.Context, u domain.User) error {
-	return r.dao.Insert(ctx, r.domainToEntity(&u))
+	return r.dao.Insert(ctx, r.domainToEntity(u))
 }
 
 func (r *CacheUserRepository) FindByEmail(ctx context.Context, email string) (domain.User, error) {
@@ -93,9 +102,9 @@ func (r *CacheUserRepository) FindByPhone(ctx context.Context, phone string) (do
 }
 
 func (r *CacheUserRepository) Update(ctx context.Context, u domain.User) error {
-	return r.dao.Update(ctx, r.domainToEntity(&u))
+	return r.dao.Update(ctx, r.domainToEntity(u))
 }
-func (r *CacheUserRepository) entityToDomain(user *dao.User) domain.User {
+func (r *CacheUserRepository) entityToDomain(user dao.User) domain.User {
 	return domain.User{
 		Id:        user.Id,
 		Email:     user.Email.String,
@@ -105,16 +114,22 @@ func (r *CacheUserRepository) entityToDomain(user *dao.User) domain.User {
 		AboutMe:   user.AboutMe.String,
 		Birthday:  time.UnixMilli(user.Birthday.Int64),
 		CreatedAt: time.UnixMilli(user.CreatedAt.Int64),
+		WeChatInfo: domain.WeChatInfo{
+			OpenId:  user.WechatOpenId.String,
+			UnionId: user.WechatUnionId.String,
+		},
 	}
 }
-func (r *CacheUserRepository) domainToEntity(user *domain.User) dao.User {
+func (r *CacheUserRepository) domainToEntity(user domain.User) dao.User {
 	return dao.User{
-		Id:       user.Id,
-		Email:    sql.NullString{String: user.Email, Valid: user.Email != ""},
-		Phone:    sql.NullString{String: user.Phone, Valid: user.Phone != ""},
-		Password: user.Password,
-		NickName: sql.NullString{String: user.NickName, Valid: user.NickName != ""},
-		AboutMe:  sql.NullString{String: user.AboutMe, Valid: user.AboutMe != ""},
-		Birthday: sql.NullInt64{Int64: user.Birthday.UnixMilli(), Valid: user.Birthday.UnixMilli() != 0},
+		Id:            user.Id,
+		Email:         sql.NullString{String: user.Email, Valid: user.Email != ""},
+		Phone:         sql.NullString{String: user.Phone, Valid: user.Phone != ""},
+		Password:      user.Password,
+		NickName:      sql.NullString{String: user.NickName, Valid: user.NickName != ""},
+		AboutMe:       sql.NullString{String: user.AboutMe, Valid: user.AboutMe != ""},
+		Birthday:      sql.NullInt64{Int64: user.Birthday.UnixMilli(), Valid: user.Birthday.UnixMilli() != 0},
+		WechatOpenId:  sql.NullString{String: user.WeChatInfo.OpenId, Valid: user.WeChatInfo.OpenId != ""},
+		WechatUnionId: sql.NullString{String: user.WeChatInfo.UnionId, Valid: user.WeChatInfo.UnionId != ""},
 	}
 }

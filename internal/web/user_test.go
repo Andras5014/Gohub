@@ -97,7 +97,7 @@ func TestUserHandler_SignUp(t *testing.T) {
 			defer ctrl.Finish()
 
 			h := NewUserHandler(tc.mock(ctrl), nil)
-			h.RegisterRouters(server)
+			h.RegisterRoutes(server)
 			req, err := http.NewRequest(http.MethodPost,
 				"/users/signup", bytes.NewBuffer([]byte(tc.reqBody)))
 			require.NoError(t, err)

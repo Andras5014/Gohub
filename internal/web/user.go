@@ -7,7 +7,6 @@ import (
 	"github.com/Andras5014/webook/internal/web/middleware"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
 	"net/http"
 	"time"
 )
@@ -19,6 +18,7 @@ var _ handler = &UserHandler{}
 type UserHandler struct {
 	svc     service.UserService
 	codeSvc service.CodeService
+	JwtHandler
 }
 
 func NewUserHandler(svc service.UserService, codeSvc service.CodeService) *UserHandler {
@@ -27,7 +27,7 @@ func NewUserHandler(svc service.UserService, codeSvc service.CodeService) *UserH
 		codeSvc: codeSvc,
 	}
 }
-func (u *UserHandler) RegisterRouters(engine *gin.Engine) {
+func (u *UserHandler) RegisterRoutes(engine *gin.Engine) {
 	ug := engine.Group("/users")
 	ug.POST("/signup", u.SignUp)
 	ug.POST("/login", u.LoginJWT)
@@ -86,13 +86,13 @@ func (u *UserHandler) SendLoginSMSCode(ctx *gin.Context) {
 		return
 	}
 	err := u.codeSvc.Send(ctx, biz, req.Phone)
-	switch err {
-	case nil:
+	switch {
+	case err == nil:
 		ctx.JSON(http.StatusOK, Result{
 			Code: http.StatusOK,
 			Msg:  "发送成功",
 		})
-	case service.ErrCodeSendTooMany:
+	case errors.Is(err, service.ErrCodeSendTooMany):
 		ctx.JSON(http.StatusOK, Result{
 			Code: http.StatusOK,
 			Msg:  "发送太频繁",
@@ -102,7 +102,6 @@ func (u *UserHandler) SendLoginSMSCode(ctx *gin.Context) {
 			Code: http.StatusOK,
 			Msg:  "系统错误",
 		})
-
 	}
 
 	ctx.String(http.StatusOK, "发送成功")
@@ -205,23 +204,6 @@ func (u *UserHandler) LoginJWT(ctx *gin.Context) {
 	return
 }
 
-func (u *UserHandler) setJWTToken(ctx *gin.Context, uid int64) error {
-	claims := middleware.UserClaims{
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 7)),
-		},
-		Uid:       uid,
-		UserAgent: ctx.Request.UserAgent(),
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
-	tokenStr, err := token.SignedString([]byte("secret"))
-	if err != nil {
-		ctx.String(http.StatusOK, "系统错误")
-		return err
-	}
-	ctx.Header("x-jwt-token", tokenStr)
-	return nil
-}
 func (u *UserHandler) Logout(ctx *gin.Context) {
 
 	// 设置session

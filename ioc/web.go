@@ -4,24 +4,29 @@ import (
 	"fmt"
 	"github.com/Andras5014/webook/internal/web"
 	"github.com/Andras5014/webook/pkg/ginx/middlewares/ratelimit"
+	ratelimit2 "github.com/Andras5014/webook/pkg/ratelimit"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 	"time"
 )
 
-func InitWebServer(mdls []gin.HandlerFunc, hdl *web.UserHandler) *gin.Engine {
+func InitWebServer(mdls []gin.HandlerFunc, hdl *web.UserHandler, oauth2 *web.OAuth2WeChatHandler) *gin.Engine {
 	server := gin.Default()
 	server.Use(mdls...)
-	hdl.RegisterRouters(server)
+	hdl.RegisterRoutes(server)
+	oauth2.RegisterRoutes(server)
 	return server
 
 }
 
-func InitMiddlewares(redisClient redis.Cmdable) []gin.HandlerFunc {
+func InitLimiter(redisClient redis.Cmdable) ratelimit2.Limiter {
+	return ratelimit2.NewRedisSlideWindowLimiter(redisClient, time.Second, 10)
+}
+func InitMiddlewares(limiter ratelimit2.Limiter) []gin.HandlerFunc {
 	return []gin.HandlerFunc{
 		corsHdl(),
-		ratelimit.NewBuilder(redisClient, time.Second, 100).Build(),
+		ratelimit.NewBuilder(limiter).Build(),
 	}
 }
 
