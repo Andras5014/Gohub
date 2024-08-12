@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/Andras5014/webook/internal/domain"
-	"github.com/google/uuid"
 	"net/http"
 	"net/url"
 )
@@ -28,8 +27,7 @@ func NewOAuth2WeChatService(appId string, appSecret string) *OAuth2WeChatService
 		client:    http.DefaultClient,
 	}
 }
-func (o *OAuth2WeChatService) AuthURL(ctx context.Context) (string, error) {
-	state := uuid.New().String()
+func (o *OAuth2WeChatService) AuthURL(ctx context.Context, state string) (string, error) {
 	return fmt.Sprintf(urlPattern, o.appId, redirectURI, state), nil
 }
 
