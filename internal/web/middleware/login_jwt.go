@@ -1,34 +1,37 @@
 package middleware
 
 import (
+	ijwt "github.com/Andras5014/webook/internal/web/jwt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"log"
 	"net/http"
-	"time"
 )
 
 type LoginJWTMiddlewareBuilder struct {
+	ijwt.Handler
 }
 
-func NewLoginJWTMiddlewareBuilder() *LoginJWTMiddlewareBuilder {
-	return &LoginJWTMiddlewareBuilder{}
+func NewLoginJWTMiddlewareBuilder(jwtHdl ijwt.Handler) *LoginJWTMiddlewareBuilder {
+	return &LoginJWTMiddlewareBuilder{
+		Handler: jwtHdl,
+	}
+
 }
 func (l *LoginJWTMiddlewareBuilder) Build() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		tokenHeader := ctx.GetHeader("Authorization")
-		if tokenHeader == "" {
-			ctx.Status(http.StatusUnauthorized)
+		path := ctx.Request.URL.Path
+		if path == "/users/signup" ||
+			path == "/users/login" ||
+			path == "/users/login_sms/code/send" ||
+			path == "/users/login_sms" ||
+			path == "/oauth2/wechat/authurl" ||
+			path == "/oauth2/wechat/callback" ||
+			path == "/users/refresh_token" {
+			// 不需要登录校验
 			return
 		}
-		//segs := strings.SplitN(tokenHeader, " ", 2)
-		//fmt.Println(segs)
-		//if len(segs) != 2 || segs[0] != "Bearer" {
-		//	ctx.AbortWithStatus(http.StatusUnauthorized)
-		//	return
-		//}
-		tokenStr := tokenHeader
-		claims := &UserClaims{}
+		tokenStr := l.ExtractToken(ctx)
+		claims := &ijwt.UserClaims{}
 		token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
 			return []byte("secret"), nil
 		})
@@ -45,22 +48,24 @@ func (l *LoginJWTMiddlewareBuilder) Build() gin.HandlerFunc {
 			ctx.AbortWithStatus(http.StatusForbidden)
 			return
 		}
-
-		//续约
-		claims.ExpiresAt = jwt.NewNumericDate(time.Now().Add(time.Hour))
-		tokenStr, err = token.SignedString([]byte("secret"))
+		//如果redis崩溃不至于全部用户都过不校验 可以选择直接return
+		// if redis 崩溃 return
+		err = l.CheckSession(ctx, claims.Ssid)
 		if err != nil {
-			log.Println("续约失败")
+			// redis问题 或者退出登录
+			ctx.AbortWithStatus(http.StatusUnauthorized)
+			return
 		}
-		ctx.Header("x-jwt-token", tokenStr)
+
+		//续约或者长短token
+		//claims.ExpiresAt = jwt.NewNumericDate(time.Now().Add(time.Hour))
+		//tokenStr, err = token.SignedString([]byte("secret"))
+		//if err != nil {
+		//	log.Println("续约失败")
+		//}
+		//ctx.Header("x-jwt-token", tokenStr)
 		ctx.Set("claims", claims)
 		ctx.Set("userId", claims.Uid)
 	}
 
-}
-
-type UserClaims struct {
-	jwt.RegisteredClaims
-	Uid       int64
-	UserAgent string
 }

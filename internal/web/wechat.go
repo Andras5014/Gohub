@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/Andras5014/webook/internal/service"
 	"github.com/Andras5014/webook/internal/service/oauth2"
+	ijwt "github.com/Andras5014/webook/internal/web/jwt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
@@ -16,14 +17,15 @@ type OAuth2WeChatHandler struct {
 	svc      oauth2.Service
 	userSvc  service.UserService
 	stateKey []byte
-	JwtHandler
+	ijwt.Handler
 }
 
-func NewOAuth2WeChatHandler(svc oauth2.Service, userSvc service.UserService) *OAuth2WeChatHandler {
+func NewOAuth2WeChatHandler(svc oauth2.Service, userSvc service.UserService, jwtHdl ijwt.Handler) *OAuth2WeChatHandler {
 	return &OAuth2WeChatHandler{
 		svc:      svc,
 		userSvc:  userSvc,
 		stateKey: []byte("secret"),
+		Handler:  jwtHdl,
 	}
 }
 
@@ -99,7 +101,7 @@ func (h *OAuth2WeChatHandler) Callback(ctx *gin.Context) {
 		})
 		return
 	}
-	err = h.setJWTToken(ctx, u.Id)
+	err = h.SetLoginToken(ctx, u.Id)
 	if err != nil {
 		ctx.JSON(http.StatusOK, Result{
 			Code: 5,
@@ -108,6 +110,10 @@ func (h *OAuth2WeChatHandler) Callback(ctx *gin.Context) {
 		return
 	}
 
+	ctx.JSON(http.StatusOK, Result{
+		Code: 0,
+		Msg:  "登陆成功",
+	})
 }
 
 func (h *OAuth2WeChatHandler) verifyState(ctx *gin.Context) error {

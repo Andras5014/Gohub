@@ -4,9 +4,11 @@ import (
 	"errors"
 	"github.com/Andras5014/webook/internal/domain"
 	"github.com/Andras5014/webook/internal/service"
-	"github.com/Andras5014/webook/internal/web/middleware"
+	ijwt "github.com/Andras5014/webook/internal/web/jwt"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/redis/go-redis/v9"
 	"net/http"
 	"time"
 )
@@ -18,25 +20,54 @@ var _ handler = &UserHandler{}
 type UserHandler struct {
 	svc     service.UserService
 	codeSvc service.CodeService
-	JwtHandler
+	cmd     redis.Cmdable
+	ijwt.Handler
 }
 
-func NewUserHandler(svc service.UserService, codeSvc service.CodeService) *UserHandler {
+func NewUserHandler(svc service.UserService, codeSvc service.CodeService, jwtHdl ijwt.Handler) *UserHandler {
 	return &UserHandler{
 		svc:     svc,
 		codeSvc: codeSvc,
+		Handler: jwtHdl,
 	}
 }
 func (u *UserHandler) RegisterRoutes(engine *gin.Engine) {
 	ug := engine.Group("/users")
 	ug.POST("/signup", u.SignUp)
 	ug.POST("/login", u.LoginJWT)
-	ug.POST("/edit", middleware.NewLoginJWTMiddlewareBuilder().Build(), u.Edit)
-	ug.GET("/profile", middleware.NewLoginJWTMiddlewareBuilder().Build(), u.ProfileJWT)
+	ug.POST("/logout", u.LogoutJWT)
+	ug.POST("/edit", u.Edit)
+	ug.GET("/profile", u.ProfileJWT)
 	ug.POST("login_sms/code/send", u.SendLoginSMSCode)
 	ug.POST("/login_sms", u.LoginSms)
+	ug.POST("/refresh_token", u.RefreshToken)
 }
+func (u *UserHandler) RefreshToken(ctx *gin.Context) {
+	refreshToken := u.ExtractToken(ctx)
 
+	var rc ijwt.RefreshClaims
+	token, err := jwt.ParseWithClaims(refreshToken, &rc, func(token *jwt.Token) (interface{}, error) {
+		return ijwt.RtKey, nil
+	})
+	if err != nil || !token.Valid {
+		ctx.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+	err = u.CheckSession(ctx, rc.Ssid)
+	if err != nil {
+		// redis问题 或者退出登录
+		ctx.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+	err = u.SetJwtToken(ctx, rc.Uid, rc.Ssid)
+	if err != nil {
+		ctx.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+	ctx.JSON(http.StatusOK, Result{
+		Msg: "刷新成功",
+	})
+}
 func (u *UserHandler) LoginSms(ctx *gin.Context) {
 	type LoginReq struct {
 		Phone string `json:"phone" binding:"required"`
@@ -65,10 +96,11 @@ func (u *UserHandler) LoginSms(ctx *gin.Context) {
 		return
 	}
 
-	if err := u.setJWTToken(ctx, user.Id); err != nil {
+	if err := u.SetLoginToken(ctx, user.Id); err != nil {
 		ctx.String(http.StatusOK, "系统错误")
 		return
 	}
+
 	ctx.String(http.StatusOK, "校验成功")
 
 }
@@ -196,12 +228,27 @@ func (u *UserHandler) LoginJWT(ctx *gin.Context) {
 
 	// JWT
 
-	if err := u.setJWTToken(ctx, user.Id); err != nil {
+	if err := u.SetLoginToken(ctx, user.Id); err != nil {
 		ctx.String(http.StatusOK, "系统错误")
 		return
 	}
+
 	ctx.String(http.StatusOK, "登录成功")
 	return
+}
+func (u *UserHandler) LogoutJWT(ctx *gin.Context) {
+	err := u.ClearToken(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "系统错误",
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, Result{
+		Code: 0,
+		Msg:  "退出成功",
+	})
 }
 
 func (u *UserHandler) Logout(ctx *gin.Context) {
@@ -229,7 +276,7 @@ func (u *UserHandler) Edit(ctx *gin.Context) {
 		return
 	}
 
-	uc := ctx.MustGet("claims").(*middleware.UserClaims)
+	uc := ctx.MustGet("claims").(*ijwt.UserClaims)
 	birthday, err := time.Parse("2006-01-02", req.Birthday)
 	if err != nil {
 		ctx.String(http.StatusOK, "系统错误")
@@ -258,7 +305,7 @@ func (u *UserHandler) ProfileJWT(ctx *gin.Context) {
 		Phone    string
 	}
 
-	uc := ctx.MustGet("claims").(*middleware.UserClaims)
+	uc := ctx.MustGet("claims").(*ijwt.UserClaims)
 	user, err := u.svc.Profile(ctx, uc.Uid)
 	if err != nil {
 		ctx.String(http.StatusOK, "系统错误")
