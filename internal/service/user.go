@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/Andras5014/webook/internal/domain"
 	"github.com/Andras5014/webook/internal/repository"
+	"github.com/Andras5014/webook/pkg/logger"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -22,10 +23,11 @@ type UserService interface {
 	FindOrCreateByWechat(ctx context.Context, info domain.WeChatInfo) (domain.User, error)
 }
 type userService struct {
-	repo repository.UserRepository
+	repo   repository.UserRepository
+	logger logger.Logger
 }
 
-func NewUserService(repo repository.UserRepository) UserService {
+func NewUserService(repo repository.UserRepository, logger logger.Logger) UserService {
 	return &userService{
 		repo: repo,
 	}
@@ -74,6 +76,8 @@ func (svc *userService) FindOrCreate(ctx context.Context, phone string) (domain.
 	if err != nil {
 		return user, err
 	}
+	// phone 脱敏 1762****454
+	svc.logger.Info("创建用户", logger.Any("phone", u.Phone))
 
 	//主从延迟会出现问题
 	return svc.repo.FindByPhone(ctx, phone)

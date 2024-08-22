@@ -1,11 +1,14 @@
 package ioc
 
 import (
+	"context"
 	"fmt"
 	"github.com/Andras5014/webook/internal/web"
 	ijwt "github.com/Andras5014/webook/internal/web/jwt"
 	"github.com/Andras5014/webook/internal/web/middleware"
+	"github.com/Andras5014/webook/pkg/ginx/middlewares/logger"
 	"github.com/Andras5014/webook/pkg/ginx/middlewares/ratelimit"
+	zapLogger "github.com/Andras5014/webook/pkg/logger"
 	ratelimit2 "github.com/Andras5014/webook/pkg/ratelimit"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -25,9 +28,15 @@ func InitWebServer(mdls []gin.HandlerFunc, hdl *web.UserHandler, oauth2 *web.OAu
 func InitLimiter(redisClient redis.Cmdable) ratelimit2.Limiter {
 	return ratelimit2.NewRedisSlideWindowLimiter(redisClient, time.Second, 10)
 }
-func InitMiddlewares(limiter ratelimit2.Limiter, jwtHdl ijwt.Handler) []gin.HandlerFunc {
+func InitMiddlewares(limiter ratelimit2.Limiter, jwtHdl ijwt.Handler, l zapLogger.Logger) []gin.HandlerFunc {
 	return []gin.HandlerFunc{
 		corsHdl(),
+		logger.NewBuilder(func(ctx context.Context, al *logger.AccessLog) {
+			l.Debug("HTTP Request", zapLogger.Field{
+				Key:   "al",
+				Value: al,
+			})
+		}).AllowReqBody().AllowRespBody().Build(),
 		ratelimit.NewBuilder(limiter).Build(),
 		middleware.NewLoginJWTMiddlewareBuilder(jwtHdl).Build(),
 	}

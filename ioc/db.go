@@ -7,8 +7,9 @@ import (
 	"gorm.io/gorm"
 )
 
-func InitDB() *gorm.DB {
-	db, err := gorm.Open(mysql.Open(config.Config.DB.DSN))
+func InitDB(cfg *config.Config) *gorm.DB {
+
+	db, err := gorm.Open(mysql.Open(cfg.DB.DSN))
 	if err != nil {
 		panic(err)
 	}

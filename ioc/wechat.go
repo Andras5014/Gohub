@@ -3,9 +3,10 @@ package ioc
 import (
 	"github.com/Andras5014/webook/internal/service/oauth2"
 	"github.com/Andras5014/webook/internal/service/oauth2/wechat"
+	"github.com/Andras5014/webook/pkg/logger"
 )
 
-func InitOAuth2WeChatService() oauth2.Service {
+func InitOAuth2WeChatService(l logger.Logger) oauth2.Service {
 	//appId, ok := os.LookupEnv("WECHAT_APP_ID")
 	//if !ok {
 	//	panic("WECHAT_APP_ID not set")
@@ -15,5 +16,5 @@ func InitOAuth2WeChatService() oauth2.Service {
 	//	panic("WECHAT_APP_KEY not set")
 	//}
 	appId, appKey := "wx0f0b0f0f0f0f0f0f", "0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
-	return wechat.NewOAuth2WeChatService(appId, appKey)
+	return wechat.NewOAuth2WeChatService(appId, appKey, l)
 }

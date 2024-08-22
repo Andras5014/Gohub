@@ -18,27 +18,30 @@ import (
 )
 
 import (
+	_ "github.com/spf13/viper/remote"
 	_ "gorm.io/driver/mysql"
 )
 
 // Injectors from wire.go:
 
 func InitWebServer() *gin.Engine {
-	cmdable := ioc.InitRedis()
+	config := ioc.InitConfig()
+	cmdable := ioc.InitRedis(config)
 	limiter := ioc.InitLimiter(cmdable)
 	handler := jwt.NewRedisJWTHandler(cmdable)
-	v := ioc.InitMiddlewares(limiter, handler)
-	db := ioc.InitDB()
+	logger := ioc.InitLogger()
+	v := ioc.InitMiddlewares(limiter, handler, logger)
+	db := ioc.InitDB(config)
 	userDAO := dao.NewUserDAO(db)
 	userCache := cache.NewUserCache(cmdable)
 	userRepository := repository.NewUserRepository(userDAO, userCache)
-	userService := service.NewUserService(userRepository)
+	userService := service.NewUserService(userRepository, logger)
 	codeCache := cache.NewCodeCache(cmdable)
 	codeRepository := repository.NewCodeRepository(codeCache)
 	smsService := ioc.InitSmsService()
 	codeService := service.NewCodeService(codeRepository, smsService)
-	userHandler := web.NewUserHandler(userService, codeService, handler)
-	oauth2Service := ioc.InitOAuth2WeChatService()
+	userHandler := web.NewUserHandler(userService, codeService, handler, logger)
+	oauth2Service := ioc.InitOAuth2WeChatService(logger)
 	oAuth2WeChatHandler := web.NewOAuth2WeChatHandler(oauth2Service, userService, handler)
 	engine := ioc.InitWebServer(v, userHandler, oAuth2WeChatHandler)
 	return engine

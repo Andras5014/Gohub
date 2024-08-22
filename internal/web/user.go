@@ -5,6 +5,7 @@ import (
 	"github.com/Andras5014/webook/internal/domain"
 	"github.com/Andras5014/webook/internal/service"
 	ijwt "github.com/Andras5014/webook/internal/web/jwt"
+	"github.com/Andras5014/webook/pkg/logger"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -22,13 +23,15 @@ type UserHandler struct {
 	codeSvc service.CodeService
 	cmd     redis.Cmdable
 	ijwt.Handler
+	Logger logger.Logger
 }
 
-func NewUserHandler(svc service.UserService, codeSvc service.CodeService, jwtHdl ijwt.Handler) *UserHandler {
+func NewUserHandler(svc service.UserService, codeSvc service.CodeService, jwtHdl ijwt.Handler, logger logger.Logger) *UserHandler {
 	return &UserHandler{
 		svc:     svc,
 		codeSvc: codeSvc,
 		Handler: jwtHdl,
+		Logger:  logger,
 	}
 }
 func (u *UserHandler) RegisterRoutes(engine *gin.Engine) {
@@ -57,6 +60,7 @@ func (u *UserHandler) RefreshToken(ctx *gin.Context) {
 	if err != nil {
 		// redis问题 或者退出登录
 		ctx.AbortWithStatus(http.StatusUnauthorized)
+		u.Logger.Error("redis错误", logger.Any("err", err))
 		return
 	}
 	err = u.SetJwtToken(ctx, rc.Uid, rc.Ssid)
@@ -82,10 +86,8 @@ func (u *UserHandler) LoginSms(ctx *gin.Context) {
 		return
 	}
 	if ok, err := u.codeSvc.Verify(ctx, biz, req.Code, req.Phone); err != nil || !ok {
-		ctx.JSON(http.StatusOK, gin.H{
-			"code": http.StatusOK,
-			"msg":  "验证码错误",
-		})
+		ctx.JSON(http.StatusOK, Result{Code: 5, Msg: "系统错误"})
+		u.Logger.Error("验证码错误", logger.Any("err", err))
 		return
 	}
 
@@ -125,11 +127,13 @@ func (u *UserHandler) SendLoginSMSCode(ctx *gin.Context) {
 			Msg:  "发送成功",
 		})
 	case errors.Is(err, service.ErrCodeSendTooMany):
+		u.Logger.Warn("发送短信过于频繁", logger.Any("err", err))
 		ctx.JSON(http.StatusOK, Result{
 			Code: http.StatusOK,
 			Msg:  "发送太频繁",
 		})
 	default:
+		u.Logger.Error("发送短信失败", logger.Any("err", err))
 		ctx.JSON(http.StatusOK, Result{
 			Code: http.StatusOK,
 			Msg:  "系统错误",

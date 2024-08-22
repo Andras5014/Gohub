@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/Andras5014/webook/internal/domain"
+	"github.com/Andras5014/webook/pkg/logger"
 	"net/http"
 	"net/url"
 )
@@ -18,13 +19,15 @@ type OAuth2WeChatService struct {
 	appId     string
 	appSecret string
 	client    *http.Client
+	logger    logger.Logger
 }
 
-func NewOAuth2WeChatService(appId string, appSecret string) *OAuth2WeChatService {
+func NewOAuth2WeChatService(appId string, appSecret string, logger logger.Logger) *OAuth2WeChatService {
 	return &OAuth2WeChatService{
 		appId:     appId,
 		appSecret: appSecret,
 		client:    http.DefaultClient,
+		logger:    logger,
 	}
 }
 func (o *OAuth2WeChatService) AuthURL(ctx context.Context, state string) (string, error) {
@@ -52,6 +55,8 @@ func (o *OAuth2WeChatService) VerifyCode(ctx context.Context, code string) (doma
 	if res.ErrCode != 0 {
 		return domain.WeChatInfo{}, fmt.Errorf("微信返回错误码：%d,错误信息：%s", res.ErrCode, res.ErrMsg)
 	}
+
+	o.logger.Info("微信返回用户信息", logger.Any("openId", res.OpenId), logger.Any("unionId", res.UnionId))
 	return domain.WeChatInfo{
 		OpenId:  res.OpenId,
 		UnionId: res.UnionId,

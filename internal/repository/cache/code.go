@@ -5,6 +5,7 @@ import (
 	_ "embed"
 	"fmt"
 	"github.com/redis/go-redis/v9"
+	"go.uber.org/zap"
 )
 
 var (
@@ -42,6 +43,9 @@ func (c *RedisCodeCache) Set(ctx context.Context, biz, phone, code string) error
 	case 0:
 		return nil
 	case -1:
+		// 发送太频繁
+		zap.L().Warn("短信发送太频繁", zap.String("biz", biz))
+		//监控这条日志不会频繁出现(超多100条预警)
 		return ErrCodeSendTooMany
 	default:
 		return fmt.Errorf("set code failed")

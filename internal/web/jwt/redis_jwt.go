@@ -52,8 +52,18 @@ func (r *RedisJWTHandler) ClearToken(ctx *gin.Context) error {
 }
 
 func (r *RedisJWTHandler) CheckSession(ctx *gin.Context, ssid string) error {
-	_, err := r.cmd.Exists(ctx, fmt.Sprintf("user:login:ssid:%s", ssid)).Result()
-	return err
+	val, err := r.cmd.Exists(ctx, fmt.Sprintf("user:login:ssid:%s", ssid)).Result()
+	switch err {
+	case redis.Nil:
+		return nil
+	case nil:
+		if val == 0 {
+			return fmt.Errorf("session invalid")
+		}
+	default:
+		return err
+	}
+	return nil
 }
 
 func (r *RedisJWTHandler) ExtractToken(ctx *gin.Context) string {
