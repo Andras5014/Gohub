@@ -33,7 +33,7 @@ func (l *LoginJWTMiddlewareBuilder) Build() gin.HandlerFunc {
 		tokenStr := l.ExtractToken(ctx)
 		claims := &ijwt.UserClaims{}
 		token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
-			return []byte("secret"), nil
+			return []byte("at_key"), nil
 		})
 		if err != nil {
 			// 没登陆
