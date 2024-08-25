@@ -4,7 +4,7 @@
 //go:build !wireinject
 // +build !wireinject
 
-package main
+package startup
 
 import (
 	"github.com/Andras5014/webook/internal/repository"
@@ -15,33 +15,29 @@ import (
 	"github.com/Andras5014/webook/internal/web/jwt"
 	"github.com/Andras5014/webook/ioc"
 	"github.com/gin-gonic/gin"
-)
-
-import (
-	_ "github.com/spf13/viper/remote"
-	_ "gorm.io/driver/mysql"
+	"github.com/google/wire"
 )
 
 // Injectors from wire.go:
 
 func InitWebServer() *gin.Engine {
-	config := ioc.InitConfig()
-	cmdable := ioc.InitRedis(config)
+	config := InitConfig()
+	cmdable := InitRedis(config)
 	limiter := ioc.InitLimiter(cmdable)
 	handler := jwt.NewRedisJWTHandler(cmdable)
-	logger := ioc.InitLogger()
+	logger := InitLogger()
 	v := ioc.InitMiddlewares(limiter, handler, logger)
-	db := ioc.InitDB(config, logger)
+	db := InitDB(config, logger)
 	userDAO := dao.NewUserDAO(db)
 	userCache := cache.NewUserCache(cmdable)
 	userRepository := repository.NewUserRepository(userDAO, userCache)
 	userService := service.NewUserService(userRepository, logger)
 	codeCache := cache.NewCodeCache(cmdable)
 	codeRepository := repository.NewCodeRepository(codeCache)
-	smsService := ioc.InitSmsService()
+	smsService := InitSmsService()
 	codeService := service.NewCodeService(codeRepository, smsService)
 	userHandler := web.NewUserHandler(userService, codeService, handler, logger)
-	oauth2Service := ioc.InitOAuth2WeChatService(logger)
+	oauth2Service := InitOAuth2WeChatService(logger)
 	oAuth2WeChatHandler := web.NewOAuth2WeChatHandler(oauth2Service, userService, handler)
 	articleDAO := dao.NewArticleDAO(db)
 	articleRepository := repository.NewArticleRepository(articleDAO)
@@ -50,3 +46,35 @@ func InitWebServer() *gin.Engine {
 	engine := ioc.InitWebServer(v, userHandler, oAuth2WeChatHandler, articleHandler)
 	return engine
 }
+
+func InitArticleHandler() *web.ArticleHandler {
+	config := InitConfig()
+	logger := InitLogger()
+	db := InitDB(config, logger)
+	articleDAO := dao.NewArticleDAO(db)
+	articleRepository := repository.NewArticleRepository(articleDAO)
+	articleService := service.NewArticleService(articleRepository)
+	articleHandler := web.NewArticleHandler(articleService, logger)
+	return articleHandler
+}
+
+// wire.go:
+
+var thirdPartySet = wire.NewSet(
+	InitConfig,
+
+	InitLogger,
+	InitDB,
+	InitRedis,
+	InitSmsService,
+)
+
+var codeSvcProvider = wire.NewSet(cache.NewCodeCache, repository.NewCodeRepository, service.NewCodeService)
+
+var userSvcProvider = wire.NewSet(dao.NewUserDAO, cache.NewUserCache, repository.NewUserRepository, service.NewUserService)
+
+var articleSvcProvider = wire.NewSet(dao.NewArticleDAO, repository.NewArticleRepository, service.NewArticleService)
+
+var oauth2SvcProvider = wire.NewSet(
+	InitOAuth2WeChatService,
+)

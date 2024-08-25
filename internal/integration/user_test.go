@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"github.com/Andras5014/webook/internal/integration/startup"
 	"github.com/Andras5014/webook/internal/web"
-	"github.com/Andras5014/webook/ioc"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"net/http"
@@ -15,8 +15,8 @@ import (
 )
 
 func TestUserHandler_e2e_SendLoginSMSCode(t *testing.T) {
-	server := InitWebServer()
-	rdb := ioc.InitRedis()
+	server := startup.InitWebServer()
+	rdb := startup.InitRedis(startup.InitConfig())
 	testCases := []struct {
 		name     string
 		before   func(t *testing.T)

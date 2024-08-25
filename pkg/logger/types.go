@@ -17,3 +17,7 @@ func Any(key string, value any) Field {
 		Value: value,
 	}
 }
+
+func Error(err error) Field {
+	return Any("error", err)
+}
