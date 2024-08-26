@@ -9,6 +9,7 @@ import (
 
 type ArticleDAO interface {
 	Insert(ctx context.Context, article Article) (int64, error)
+	UpdateById(ctx context.Context, article Article) error
 }
 
 type GormArticleDAO struct {
@@ -23,6 +24,11 @@ func (g *GormArticleDAO) Insert(ctx context.Context, article Article) (int64, er
 	article.CreatedAt = now
 	article.UpdatedAt = now
 	return article.Id, g.db.WithContext(ctx).Create(&article).Error
+}
+
+func (g *GormArticleDAO) UpdateById(ctx context.Context, article Article) error {
+	article.UpdatedAt = sql.NullInt64{Int64: time.Now().UnixMilli(), Valid: true}
+	return g.db.WithContext(ctx).Updates(&article).Error
 }
 
 type Article struct {

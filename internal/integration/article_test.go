@@ -2,6 +2,7 @@ package integration
 
 import (
 	"bytes"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"github.com/Andras5014/webook/internal/integration/startup"
@@ -86,6 +87,50 @@ func (s *ArticleTestSuite) TestEdit() {
 			},
 			wantErr: nil,
 		},
+		{
+			name: "修改已有帖子,保存成功",
+			before: func(t *testing.T) {
+				err := s.db.Create(&dao.Article{
+					Id:        2,
+					Title:     "测试标题",
+					Content:   "测试内容",
+					AuthorId:  123,
+					CreatedAt: sql.NullInt64{Int64: 123, Valid: true},
+					UpdatedAt: sql.NullInt64{Int64: 123, Valid: true},
+				}).Error
+				assert.NoError(t, err)
+			},
+			after: func(t *testing.T) {
+				var article dao.Article
+				err := s.db.Where("id", 2).First(&article).Error
+				assert.NoError(t, err)
+				//assert.True(t, article.CreatedAt.Int64 == int64(123))
+				//assert.True(t, article.UpdatedAt.Int64 > 123)
+				article.CreatedAt.Int64 = 0
+				article.UpdatedAt.Int64 = 0
+				article.CreatedAt.Valid = false
+				article.UpdatedAt.Valid = false
+
+				assert.Equal(t, dao.Article{
+					Id:       2,
+					Title:    "新的标题",
+					Content:  "新的内容",
+					AuthorId: 123,
+				}, article)
+			},
+			art: Article{
+				Id:      2,
+				Title:   "新的标题",
+				Content: "新的内容",
+			},
+			wantCode: http.StatusOK,
+			wantRes: Result[int64]{
+
+				Msg:  "ok",
+				Data: 2,
+			},
+			wantErr: nil,
+		},
 	}
 
 	for _, tc := range testCases {
@@ -116,6 +161,7 @@ func TestArticle(t *testing.T) {
 }
 
 type Article struct {
+	Id      int64  `json:"id"`
 	Title   string `json:"title"`
 	Content string `json:"content"`
 }

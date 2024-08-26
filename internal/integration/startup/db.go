@@ -38,7 +38,7 @@ func (g gormLoggerFunc) Printf(msg string, fields ...interface{}) {
 	// 提取 GORM 日志中的关键信息
 	if len(fields) >= 4 {
 		// 格式化日志输出
-		formattedMsg := fmt.Sprintf("[GORM] %.3fms | Rows: %v | SQL: %s", fields[1], fields[2], fields[3])
+		formattedMsg := fmt.Sprintf("[GORM] %.3fms | Rows: %v | SQL: %s", fields[2], fields[3], fields[4])
 		g(formattedMsg, logger.Any("details", fields))
 	} else {
 		// 如果 fields 的数量少于 4 个，直接打印原始信息
