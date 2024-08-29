@@ -8,6 +8,7 @@ package startup
 
 import (
 	"github.com/Andras5014/webook/internal/repository"
+	"github.com/Andras5014/webook/internal/repository/article"
 	"github.com/Andras5014/webook/internal/repository/cache"
 	"github.com/Andras5014/webook/internal/repository/dao"
 	"github.com/Andras5014/webook/internal/service"
@@ -40,7 +41,7 @@ func InitWebServer() *gin.Engine {
 	oauth2Service := InitOAuth2WeChatService(logger)
 	oAuth2WeChatHandler := web.NewOAuth2WeChatHandler(oauth2Service, userService, handler)
 	articleDAO := dao.NewArticleDAO(db)
-	articleRepository := repository.NewArticleRepository(articleDAO)
+	articleRepository := article.NewArticleRepository(articleDAO)
 	articleService := service.NewArticleService(articleRepository)
 	articleHandler := web.NewArticleHandler(articleService, logger)
 	engine := ioc.InitWebServer(v, userHandler, oAuth2WeChatHandler, articleHandler)
@@ -52,7 +53,7 @@ func InitArticleHandler() *web.ArticleHandler {
 	logger := InitLogger()
 	db := InitDB(config, logger)
 	articleDAO := dao.NewArticleDAO(db)
-	articleRepository := repository.NewArticleRepository(articleDAO)
+	articleRepository := article.NewArticleRepository(articleDAO)
 	articleService := service.NewArticleService(articleRepository)
 	articleHandler := web.NewArticleHandler(articleService, logger)
 	return articleHandler
@@ -73,7 +74,7 @@ var codeSvcProvider = wire.NewSet(cache.NewCodeCache, repository.NewCodeReposito
 
 var userSvcProvider = wire.NewSet(dao.NewUserDAO, cache.NewUserCache, repository.NewUserRepository, service.NewUserService)
 
-var articleSvcProvider = wire.NewSet(dao.NewArticleDAO, repository.NewArticleRepository, service.NewArticleService)
+var articleSvcProvider = wire.NewSet(dao.NewArticleDAO, article.NewArticleRepository, service.NewArticleService)
 
 var oauth2SvcProvider = wire.NewSet(
 	InitOAuth2WeChatService,

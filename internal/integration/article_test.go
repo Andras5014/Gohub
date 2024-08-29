@@ -117,6 +117,7 @@ func (s *ArticleTestSuite) TestEdit() {
 					Content:  "新的内容",
 					AuthorId: 123,
 				}, article)
+
 			},
 			art: Article{
 				Id:      2,
@@ -128,6 +129,50 @@ func (s *ArticleTestSuite) TestEdit() {
 
 				Msg:  "ok",
 				Data: 2,
+			},
+			wantErr: nil,
+		},
+		{
+			name: "修改别人帖子",
+			before: func(t *testing.T) {
+				err := s.db.Create(&dao.Article{
+					Id:        3,
+					Title:     "测试标题",
+					Content:   "测试内容",
+					AuthorId:  789,
+					CreatedAt: sql.NullInt64{Int64: 123, Valid: true},
+					UpdatedAt: sql.NullInt64{Int64: 123, Valid: true},
+				}).Error
+				assert.NoError(t, err)
+			},
+			after: func(t *testing.T) {
+				var article dao.Article
+				err := s.db.Where("id", 3).First(&article).Error
+				assert.NoError(t, err)
+				//assert.True(t, article.CreatedAt.Int64 == int64(123))
+				//assert.True(t, article.UpdatedAt.Int64 > 123)
+				article.CreatedAt.Int64 = 0
+				article.UpdatedAt.Int64 = 0
+				article.CreatedAt.Valid = false
+				article.UpdatedAt.Valid = false
+
+				assert.Equal(t, dao.Article{
+					Id:       3,
+					Title:    "测试标题",
+					Content:  "测试内容",
+					AuthorId: 789,
+				}, article)
+
+			},
+			art: Article{
+				Id:      3,
+				Title:   "新的标题",
+				Content: "新的内容",
+			},
+			wantCode: http.StatusOK,
+			wantRes: Result[int64]{
+				Code: 5,
+				Msg:  "系统错误",
 			},
 			wantErr: nil,
 		},
@@ -153,6 +198,7 @@ func (s *ArticleTestSuite) TestEdit() {
 			require.Equal(t, tc.wantCode, resp.Code)
 			require.Equal(t, tc.wantRes, webRes)
 			tc.after(t)
+
 		})
 	}
 }
@@ -178,3 +224,18 @@ func TestA(t *testing.T) {
 	id := ctx.MustGet("userId")
 	fmt.Println(id)
 }
+
+//type ResultTest[T any] struct {
+//	result T
+//}
+//
+//func testHandler(ctx *gin.Context) {
+//	//拿唯一标识来
+//	code := ctx.MustGet("bizcode")
+//	switch {
+//	case code == 1:
+//		var result ResultTest[int]
+//	}
+//	ctx.ShouldBindJSON(&result)
+//
+//}

@@ -3,6 +3,7 @@ package dao
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"gorm.io/gorm"
 	"time"
 )
@@ -28,7 +29,14 @@ func (g *GormArticleDAO) Insert(ctx context.Context, article Article) (int64, er
 
 func (g *GormArticleDAO) UpdateById(ctx context.Context, article Article) error {
 	article.UpdatedAt = sql.NullInt64{Int64: time.Now().UnixMilli(), Valid: true}
-	return g.db.WithContext(ctx).Updates(&article).Error
+	res := g.db.WithContext(ctx).Model(&article).Where("id = ? And author_id = ?", article.Id, article.AuthorId).Updates(&article)
+	if res.Error != nil {
+		return res.Error
+	}
+	if res.RowsAffected == 0 {
+		return errors.New("更新失败，可能是非法操作")
+	}
+	return nil
 }
 
 type Article struct {

@@ -1,4 +1,4 @@
-package repository
+package article
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"github.com/Andras5014/webook/internal/repository/dao"
 )
 
-type ArticleRepository interface {
+type Repository interface {
 	Create(ctx context.Context, article domain.Article) (int64, error)
 	Update(ctx context.Context, article domain.Article) error
 }
@@ -14,7 +14,7 @@ type CacheArticleRepository struct {
 	dao dao.ArticleDAO
 }
 
-func NewArticleRepository(dao dao.ArticleDAO) ArticleRepository {
+func NewArticleRepository(dao dao.ArticleDAO) Repository {
 	return &CacheArticleRepository{
 		dao: dao,
 	}

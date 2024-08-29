@@ -4,6 +4,7 @@ package startup
 
 import (
 	"github.com/Andras5014/webook/internal/repository"
+	"github.com/Andras5014/webook/internal/repository/article"
 	"github.com/Andras5014/webook/internal/repository/cache"
 	"github.com/Andras5014/webook/internal/repository/dao"
 	"github.com/Andras5014/webook/internal/service"
@@ -38,7 +39,7 @@ var userSvcProvider = wire.NewSet(
 
 var articleSvcProvider = wire.NewSet(
 	dao.NewArticleDAO,
-	repository.NewArticleRepository,
+	article.NewArticleRepository,
 	service.NewArticleService,
 )
 

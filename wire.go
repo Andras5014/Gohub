@@ -4,6 +4,7 @@ package main
 
 import (
 	"github.com/Andras5014/webook/internal/repository"
+	"github.com/Andras5014/webook/internal/repository/article"
 	"github.com/Andras5014/webook/internal/repository/cache"
 	"github.com/Andras5014/webook/internal/repository/dao"
 	"github.com/Andras5014/webook/internal/service"
@@ -27,7 +28,7 @@ func InitWebServer() *gin.Engine {
 
 		repository.NewUserRepository,
 		repository.NewCodeRepository,
-		repository.NewArticleRepository,
+		article.NewArticleRepository,
 
 		service.NewCodeService,
 		service.NewUserService,
