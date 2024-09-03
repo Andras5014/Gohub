@@ -11,6 +11,7 @@ import (
 	"github.com/Andras5014/webook/internal/repository/article"
 	"github.com/Andras5014/webook/internal/repository/cache"
 	"github.com/Andras5014/webook/internal/repository/dao"
+	article2 "github.com/Andras5014/webook/internal/repository/dao/article"
 	"github.com/Andras5014/webook/internal/service"
 	"github.com/Andras5014/webook/internal/web"
 	"github.com/Andras5014/webook/internal/web/jwt"
@@ -44,7 +45,7 @@ func InitWebServer() *gin.Engine {
 	userHandler := web.NewUserHandler(userService, codeService, handler, logger)
 	oauth2Service := ioc.InitOAuth2WeChatService(logger)
 	oAuth2WeChatHandler := web.NewOAuth2WeChatHandler(oauth2Service, userService, handler)
-	articleDAO := dao.NewArticleDAO(db)
+	articleDAO := article2.NewArticleDAO(db)
 	articleRepository := article.NewArticleRepository(articleDAO)
 	articleService := service.NewArticleService(articleRepository)
 	articleHandler := web.NewArticleHandler(articleService, logger)

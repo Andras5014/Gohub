@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/Andras5014/webook/internal/integration/startup"
-	"github.com/Andras5014/webook/internal/repository/dao"
+	"github.com/Andras5014/webook/internal/repository/dao/article"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -58,7 +58,7 @@ func (s *ArticleTestSuite) TestEdit() {
 
 			},
 			after: func(t *testing.T) {
-				var article dao.Article
+				var article article.Article
 				err := s.db.Where("id", 1).First(&article).Error
 				assert.NoError(t, err)
 				assert.True(t, article.CreatedAt.Int64 > 0)
@@ -68,7 +68,7 @@ func (s *ArticleTestSuite) TestEdit() {
 				article.CreatedAt.Valid = false
 				article.UpdatedAt.Valid = false
 
-				assert.Equal(t, dao.Article{
+				assert.Equal(t, article.Article{
 					Id:       1,
 					Title:    "测试标题",
 					Content:  "测试内容",
@@ -90,7 +90,7 @@ func (s *ArticleTestSuite) TestEdit() {
 		{
 			name: "修改已有帖子,保存成功",
 			before: func(t *testing.T) {
-				err := s.db.Create(&dao.Article{
+				err := s.db.Create(&article.Article{
 					Id:        2,
 					Title:     "测试标题",
 					Content:   "测试内容",
@@ -101,7 +101,7 @@ func (s *ArticleTestSuite) TestEdit() {
 				assert.NoError(t, err)
 			},
 			after: func(t *testing.T) {
-				var article dao.Article
+				var article article.Article
 				err := s.db.Where("id", 2).First(&article).Error
 				assert.NoError(t, err)
 				//assert.True(t, article.CreatedAt.Int64 == int64(123))
@@ -111,7 +111,7 @@ func (s *ArticleTestSuite) TestEdit() {
 				article.CreatedAt.Valid = false
 				article.UpdatedAt.Valid = false
 
-				assert.Equal(t, dao.Article{
+				assert.Equal(t, article.Article{
 					Id:       2,
 					Title:    "新的标题",
 					Content:  "新的内容",
@@ -135,7 +135,7 @@ func (s *ArticleTestSuite) TestEdit() {
 		{
 			name: "修改别人帖子",
 			before: func(t *testing.T) {
-				err := s.db.Create(&dao.Article{
+				err := s.db.Create(&article.Article{
 					Id:        3,
 					Title:     "测试标题",
 					Content:   "测试内容",
@@ -146,7 +146,7 @@ func (s *ArticleTestSuite) TestEdit() {
 				assert.NoError(t, err)
 			},
 			after: func(t *testing.T) {
-				var article dao.Article
+				var article article.Article
 				err := s.db.Where("id", 3).First(&article).Error
 				assert.NoError(t, err)
 				//assert.True(t, article.CreatedAt.Int64 == int64(123))
@@ -156,7 +156,7 @@ func (s *ArticleTestSuite) TestEdit() {
 				article.CreatedAt.Valid = false
 				article.UpdatedAt.Valid = false
 
-				assert.Equal(t, dao.Article{
+				assert.Equal(t, article.Article{
 					Id:       3,
 					Title:    "测试标题",
 					Content:  "测试内容",

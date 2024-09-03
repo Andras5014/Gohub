@@ -18,7 +18,7 @@ type articleService struct {
 	// 方案一
 	repo article.Repository
 
-	// 方案二
+	// 方案二 依靠二个不同repository 来解决跨表跨库问题
 	readerRepo article.ReaderRepository
 	authorRepo article.AuthorRepository
 
@@ -50,8 +50,7 @@ func (a *articleService) Save(ctx context.Context, article domain.Article) (int6
 
 func (a *articleService) Publish(ctx context.Context, article domain.Article) (int64, error) {
 	//制作库
-	//id, err := a.repo.Create(ctx, article)
-	panic("implement me")
+	return a.repo.Sync(ctx, article)
 }
 func (a *articleService) PublishV1(ctx context.Context, article domain.Article) (int64, error) {
 	var (

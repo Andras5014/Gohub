@@ -7,6 +7,7 @@ import (
 	"github.com/Andras5014/webook/internal/repository/article"
 	"github.com/Andras5014/webook/internal/repository/cache"
 	"github.com/Andras5014/webook/internal/repository/dao"
+	article2 "github.com/Andras5014/webook/internal/repository/dao/article"
 	"github.com/Andras5014/webook/internal/service"
 	"github.com/Andras5014/webook/internal/web"
 	ijwt "github.com/Andras5014/webook/internal/web/jwt"
@@ -38,7 +39,7 @@ var userSvcProvider = wire.NewSet(
 )
 
 var articleSvcProvider = wire.NewSet(
-	dao.NewArticleDAO,
+	article2.NewArticleDAO,
 	article.NewArticleRepository,
 	service.NewArticleService,
 )
