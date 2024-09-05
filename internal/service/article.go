@@ -12,6 +12,7 @@ type ArticleService interface {
 	Save(ctx context.Context, article domain.Article) (int64, error)
 	Publish(ctx context.Context, article domain.Article) (int64, error)
 	PublishV1(ctx context.Context, article domain.Article) (int64, error)
+	Withdraw(ctx context.Context, article domain.Article) (int64, error)
 }
 
 type articleService struct {
@@ -41,6 +42,7 @@ func NewArticleServiceV1(readerRepo article.ReaderRepository, authorRepo article
 }
 
 func (a *articleService) Save(ctx context.Context, article domain.Article) (int64, error) {
+	article.Status = domain.ArticleStatusUnPublished
 	if article.Id > 0 {
 		return article.Id, a.repo.Update(ctx, article)
 	}
@@ -50,6 +52,7 @@ func (a *articleService) Save(ctx context.Context, article domain.Article) (int6
 
 func (a *articleService) Publish(ctx context.Context, article domain.Article) (int64, error) {
 	//制作库
+	article.Status = domain.ArticleStatusPublished
 	return a.repo.Sync(ctx, article)
 }
 func (a *articleService) PublishV1(ctx context.Context, article domain.Article) (int64, error) {
@@ -76,6 +79,11 @@ func (a *articleService) PublishV1(ctx context.Context, article domain.Article) 
 	}
 	return id, nil
 
+}
+
+func (a *articleService) Withdraw(ctx context.Context, article domain.Article) (int64, error) {
+	article.Status = domain.ArticleStatusPrivate
+	return a.repo.SyncStatus(ctx, article)
 }
 
 // retrySaveToReaderRepo 重试保存到 readerRepo，最多重试指定次数

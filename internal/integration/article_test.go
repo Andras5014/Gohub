@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"github.com/Andras5014/webook/internal/domain"
 	"github.com/Andras5014/webook/internal/integration/startup"
 	"github.com/Andras5014/webook/internal/repository/dao/article"
 	"github.com/gin-gonic/gin"
@@ -58,22 +59,23 @@ func (s *ArticleTestSuite) TestEdit() {
 
 			},
 			after: func(t *testing.T) {
-				var article article.Article
-				err := s.db.Where("id", 1).First(&article).Error
+				var art article.Article
+				err := s.db.Where("id", 1).First(&art).Error
 				assert.NoError(t, err)
-				assert.True(t, article.CreatedAt.Int64 > 0)
-				assert.True(t, article.UpdatedAt.Int64 > 0)
-				article.CreatedAt.Int64 = 0
-				article.UpdatedAt.Int64 = 0
-				article.CreatedAt.Valid = false
-				article.UpdatedAt.Valid = false
+				assert.True(t, art.CreatedAt.Int64 > 0)
+				assert.True(t, art.UpdatedAt.Int64 > 0)
+				art.CreatedAt.Int64 = 0
+				art.UpdatedAt.Int64 = 0
+				art.CreatedAt.Valid = false
+				art.UpdatedAt.Valid = false
 
 				assert.Equal(t, article.Article{
 					Id:       1,
 					Title:    "测试标题",
 					Content:  "测试内容",
 					AuthorId: 123,
-				}, article)
+					Status:   domain.ArticleStatusUnPublished.ToUint8(),
+				}, art)
 			},
 			art: Article{
 				Title:   "测试标题",
@@ -101,22 +103,23 @@ func (s *ArticleTestSuite) TestEdit() {
 				assert.NoError(t, err)
 			},
 			after: func(t *testing.T) {
-				var article article.Article
-				err := s.db.Where("id", 2).First(&article).Error
+				var art article.Article
+				err := s.db.Where("id", 2).First(&art).Error
 				assert.NoError(t, err)
 				//assert.True(t, article.CreatedAt.Int64 == int64(123))
 				//assert.True(t, article.UpdatedAt.Int64 > 123)
-				article.CreatedAt.Int64 = 0
-				article.UpdatedAt.Int64 = 0
-				article.CreatedAt.Valid = false
-				article.UpdatedAt.Valid = false
+				art.CreatedAt.Int64 = 0
+				art.UpdatedAt.Int64 = 0
+				art.CreatedAt.Valid = false
+				art.UpdatedAt.Valid = false
 
 				assert.Equal(t, article.Article{
 					Id:       2,
 					Title:    "新的标题",
 					Content:  "新的内容",
 					AuthorId: 123,
-				}, article)
+					Status:   domain.ArticleStatusUnPublished.ToUint8(),
+				}, art)
 
 			},
 			art: Article{
@@ -146,22 +149,22 @@ func (s *ArticleTestSuite) TestEdit() {
 				assert.NoError(t, err)
 			},
 			after: func(t *testing.T) {
-				var article article.Article
-				err := s.db.Where("id", 3).First(&article).Error
+				var art article.Article
+				err := s.db.Where("id", 3).First(&art).Error
 				assert.NoError(t, err)
 				//assert.True(t, article.CreatedAt.Int64 == int64(123))
 				//assert.True(t, article.UpdatedAt.Int64 > 123)
-				article.CreatedAt.Int64 = 0
-				article.UpdatedAt.Int64 = 0
-				article.CreatedAt.Valid = false
-				article.UpdatedAt.Valid = false
+				art.CreatedAt.Int64 = 0
+				art.UpdatedAt.Int64 = 0
+				art.CreatedAt.Valid = false
+				art.UpdatedAt.Valid = false
 
 				assert.Equal(t, article.Article{
 					Id:       3,
 					Title:    "测试标题",
 					Content:  "测试内容",
 					AuthorId: 789,
-				}, article)
+				}, art)
 
 			},
 			art: Article{
