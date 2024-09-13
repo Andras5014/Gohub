@@ -2,7 +2,6 @@ package integration
 
 import (
 	"bytes"
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"github.com/Andras5014/webook/internal/domain"
@@ -62,12 +61,10 @@ func (s *ArticleTestSuite) TestEdit() {
 				var art article.Article
 				err := s.db.Where("id", 1).First(&art).Error
 				assert.NoError(t, err)
-				assert.True(t, art.CreatedAt.Int64 > 0)
-				assert.True(t, art.UpdatedAt.Int64 > 0)
-				art.CreatedAt.Int64 = 0
-				art.UpdatedAt.Int64 = 0
-				art.CreatedAt.Valid = false
-				art.UpdatedAt.Valid = false
+				assert.True(t, art.CreatedAt > 0)
+				assert.True(t, art.UpdatedAt > 0)
+				art.CreatedAt = 0
+				art.UpdatedAt = 0
 
 				assert.Equal(t, article.Article{
 					Id:       1,
@@ -97,8 +94,8 @@ func (s *ArticleTestSuite) TestEdit() {
 					Title:     "测试标题",
 					Content:   "测试内容",
 					AuthorId:  123,
-					CreatedAt: sql.NullInt64{Int64: 123, Valid: true},
-					UpdatedAt: sql.NullInt64{Int64: 123, Valid: true},
+					CreatedAt: int64(123),
+					UpdatedAt: int64(123),
 				}).Error
 				assert.NoError(t, err)
 			},
@@ -108,10 +105,8 @@ func (s *ArticleTestSuite) TestEdit() {
 				assert.NoError(t, err)
 				//assert.True(t, article.CreatedAt.Int64 == int64(123))
 				//assert.True(t, article.UpdatedAt.Int64 > 123)
-				art.CreatedAt.Int64 = 0
-				art.UpdatedAt.Int64 = 0
-				art.CreatedAt.Valid = false
-				art.UpdatedAt.Valid = false
+				art.CreatedAt = 0
+				art.UpdatedAt = 0
 
 				assert.Equal(t, article.Article{
 					Id:       2,
@@ -143,8 +138,8 @@ func (s *ArticleTestSuite) TestEdit() {
 					Title:     "测试标题",
 					Content:   "测试内容",
 					AuthorId:  789,
-					CreatedAt: sql.NullInt64{Int64: 123, Valid: true},
-					UpdatedAt: sql.NullInt64{Int64: 123, Valid: true},
+					CreatedAt: int64(123),
+					UpdatedAt: int64(123),
 				}).Error
 				assert.NoError(t, err)
 			},
@@ -154,10 +149,8 @@ func (s *ArticleTestSuite) TestEdit() {
 				assert.NoError(t, err)
 				//assert.True(t, article.CreatedAt.Int64 == int64(123))
 				//assert.True(t, article.UpdatedAt.Int64 > 123)
-				art.CreatedAt.Int64 = 0
-				art.UpdatedAt.Int64 = 0
-				art.CreatedAt.Valid = false
-				art.UpdatedAt.Valid = false
+				art.CreatedAt = 0
+				art.UpdatedAt = 0
 
 				assert.Equal(t, article.Article{
 					Id:       3,

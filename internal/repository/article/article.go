@@ -10,8 +10,8 @@ type Repository interface {
 	Create(ctx context.Context, article domain.Article) (int64, error)
 	Update(ctx context.Context, article domain.Article) error
 	// Sync 存储同步数据
-	Sync(ctx context.Context, article domain.Article)
-	SyncV1(ctx context.Context) (int64, error)
+	Sync(ctx context.Context, article domain.Article) (int64, error)
+	SyncV1(ctx context.Context, article domain.Article) (int64, error)
 	SyncStatus(ctx context.Context, article domain.Article) (int64, error)
 }
 type CacheArticleRepository struct {

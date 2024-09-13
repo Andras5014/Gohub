@@ -79,3 +79,14 @@ func InitArticleHandler() *web.ArticleHandler {
 	)
 	return new(web.ArticleHandler)
 }
+func InitArticleHandlerV1(dao article2.ArticleDAO) *web.ArticleHandler {
+	wire.Build(
+
+		InitLogger,
+
+		article.NewArticleRepository,
+		service.NewArticleService,
+		web.NewArticleHandler,
+	)
+	return new(web.ArticleHandler)
+}
