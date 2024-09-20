@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/Andras5014/webook/config"
 	"github.com/Andras5014/webook/internal/repository/dao"
-	"github.com/Andras5014/webook/pkg/logger"
+	"github.com/Andras5014/webook/pkg/logx"
 	"go.mongodb.org/mongo-driver/event"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -16,7 +16,7 @@ import (
 	glogger "gorm.io/gorm/logger"
 )
 
-func InitDB(cfg *config.Config, l logger.Logger) *gorm.DB {
+func InitDB(cfg *config.Config, l logx.Logger) *gorm.DB {
 
 	db, err := gorm.Open(mysql.Open(cfg.DB.DSN), &gorm.Config{
 		Logger: glogger.New(gormLoggerFunc(l.Debug), glogger.Config{
@@ -60,16 +60,16 @@ func InitMongoDB() *mongo.Database {
 	return mongoDB
 }
 
-type gormLoggerFunc func(msg string, fields ...logger.Field)
+type gormLoggerFunc func(msg string, fields ...logx.Field)
 
 func (g gormLoggerFunc) Printf(msg string, fields ...interface{}) {
 	// 提取 GORM 日志中的关键信息
 	if len(fields) >= 4 {
 		// 格式化日志输出
 		formattedMsg := fmt.Sprintf("[GORM] %.3fms | Rows: %v | SQL: %s", fields[2], fields[3], fields[4])
-		g(formattedMsg, logger.Any("details", fields))
+		g(formattedMsg, logx.Any("details", fields))
 	} else {
 		// 如果 fields 的数量少于 4 个，直接打印原始信息
-		g(msg, logger.Any("args", fields))
+		g(msg, logx.Any("args", fields))
 	}
 }

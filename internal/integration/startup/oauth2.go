@@ -3,10 +3,10 @@ package startup
 import (
 	"github.com/Andras5014/webook/internal/service/oauth2"
 	"github.com/Andras5014/webook/internal/service/oauth2/wechat"
-	"github.com/Andras5014/webook/pkg/logger"
+	"github.com/Andras5014/webook/pkg/logx"
 )
 
-func InitOAuth2WeChatService(l logger.Logger) oauth2.Service {
+func InitOAuth2WeChatService(l logx.Logger) oauth2.Service {
 	//appId, ok := os.LookupEnv("WECHAT_APP_ID")
 	//if !ok {
 	//	panic("WECHAT_APP_ID not set")

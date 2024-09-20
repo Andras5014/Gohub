@@ -9,7 +9,9 @@ import (
 	"github.com/Andras5014/webook/internal/repository/dao"
 	article2 "github.com/Andras5014/webook/internal/repository/dao/article"
 	"github.com/Andras5014/webook/internal/service"
-	"github.com/Andras5014/webook/internal/web"
+	article3 "github.com/Andras5014/webook/internal/web/handler/article"
+	"github.com/Andras5014/webook/internal/web/handler/oauth2"
+	"github.com/Andras5014/webook/internal/web/handler/user"
 	ijwt "github.com/Andras5014/webook/internal/web/jwt"
 	"github.com/Andras5014/webook/ioc"
 	"github.com/gin-gonic/gin"
@@ -60,9 +62,9 @@ func InitWebServer() *gin.Engine {
 		ioc.InitMiddlewares,
 		ioc.InitLimiter,
 
-		web.NewUserHandler,
-		web.NewArticleHandler,
-		web.NewOAuth2WeChatHandler,
+		user.NewUserHandler,
+		article3.NewArticleHandler,
+		oauth2.NewOAuth2WeChatHandler,
 
 		ijwt.NewRedisJWTHandler,
 
@@ -71,22 +73,22 @@ func InitWebServer() *gin.Engine {
 	return new(gin.Engine)
 }
 
-func InitArticleHandler() *web.ArticleHandler {
+func InitArticleHandler() *article3.Handler {
 	wire.Build(
 		thirdPartySet,
 		articleSvcProvider,
-		web.NewArticleHandler,
+		article3.NewArticleHandler,
 	)
-	return new(web.ArticleHandler)
+	return new(article3.Handler)
 }
-func InitArticleHandlerV1(dao article2.ArticleDAO) *web.ArticleHandler {
+func InitArticleHandlerV1(dao article2.ArticleDAO) *article3.Handler {
 	wire.Build(
 
 		InitLogger,
 
 		article.NewArticleRepository,
 		service.NewArticleService,
-		web.NewArticleHandler,
+		article3.NewArticleHandler,
 	)
-	return new(web.ArticleHandler)
+	return new(article3.Handler)
 }

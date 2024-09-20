@@ -1,12 +1,15 @@
-package logger
+package logx
 
-import "go.uber.org/zap"
+import (
+	"context"
+	"go.uber.org/zap"
+)
 
 type ZapLogger struct {
 	l *zap.Logger
 }
 
-func NewZapLogger(l *zap.Logger) *ZapLogger {
+func NewZapLogger(l *zap.Logger) Logger {
 	return &ZapLogger{l: l}
 }
 func (z *ZapLogger) Debug(msg string, args ...Field) {
@@ -23,6 +26,15 @@ func (z *ZapLogger) Warn(msg string, args ...Field) {
 
 func (z *ZapLogger) Error(msg string, args ...Field) {
 	z.l.Error(msg, z.toZapFields(args)...)
+}
+
+func (z *ZapLogger) WithCtx(ctx context.Context) Logger {
+	// TODO 整合trace
+	return z
+}
+
+func (z *ZapLogger) With(field Field) Logger {
+	return &ZapLogger{l: z.l.With(z.toZapFields([]Field{field})...)}
 }
 
 func (z *ZapLogger) toZapFields(args []Field) []zap.Field {

@@ -5,7 +5,7 @@ import (
 	"errors"
 	"github.com/Andras5014/webook/internal/domain"
 	"github.com/Andras5014/webook/internal/repository"
-	"github.com/Andras5014/webook/pkg/logger"
+	"github.com/Andras5014/webook/pkg/logx"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -24,10 +24,10 @@ type UserService interface {
 }
 type userService struct {
 	repo   repository.UserRepository
-	logger logger.Logger
+	logger logx.Logger
 }
 
-func NewUserService(repo repository.UserRepository, logger logger.Logger) UserService {
+func NewUserService(repo repository.UserRepository, logger logx.Logger) UserService {
 	return &userService{
 		repo: repo,
 	}
@@ -77,7 +77,7 @@ func (svc *userService) FindOrCreate(ctx context.Context, phone string) (domain.
 		return user, err
 	}
 	// phone 脱敏 1762****454
-	svc.logger.Info("创建用户", logger.Any("phone", u.Phone))
+	svc.logger.Info("创建用户", logx.Any("phone", u.Phone))
 
 	//主从延迟会出现问题
 	return svc.repo.FindByPhone(ctx, phone)

@@ -3,12 +3,14 @@ package ioc
 import (
 	"context"
 	"fmt"
-	"github.com/Andras5014/webook/internal/web"
+	"github.com/Andras5014/webook/internal/web/handler/article"
+	"github.com/Andras5014/webook/internal/web/handler/oauth2"
+	"github.com/Andras5014/webook/internal/web/handler/user"
 	ijwt "github.com/Andras5014/webook/internal/web/jwt"
 	"github.com/Andras5014/webook/internal/web/middleware"
 	"github.com/Andras5014/webook/pkg/ginx/middlewares/logger"
 	"github.com/Andras5014/webook/pkg/ginx/middlewares/ratelimit"
-	zapLogger "github.com/Andras5014/webook/pkg/logger"
+	zapLogger "github.com/Andras5014/webook/pkg/logx"
 	ratelimit2 "github.com/Andras5014/webook/pkg/ratelimit"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -16,7 +18,7 @@ import (
 	"time"
 )
 
-func InitWebServer(mdls []gin.HandlerFunc, userHdl *web.UserHandler, oauth2Hdl *web.OAuth2WeChatHandler, articleHdl *web.ArticleHandler) *gin.Engine {
+func InitWebServer(mdls []gin.HandlerFunc, userHdl *user.Handler, oauth2Hdl *oauth2.WeChatHandler, articleHdl *article.Handler) *gin.Engine {
 	server := gin.Default()
 	server.Use(mdls...)
 	userHdl.RegisterRoutes(server)

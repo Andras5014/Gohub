@@ -5,7 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/Andras5014/webook/internal/integration/startup"
-	"github.com/Andras5014/webook/internal/web"
+	"github.com/Andras5014/webook/internal/web/result"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"net/http"
@@ -23,7 +23,7 @@ func TestUserHandler_e2e_SendLoginSMSCode(t *testing.T) {
 		after    func(t *testing.T)
 		reqBody  string
 		wantCode int
-		wantBody web.Result
+		wantBody result.Result
 	}{
 		{
 			name: "发送成功",
@@ -39,7 +39,7 @@ func TestUserHandler_e2e_SendLoginSMSCode(t *testing.T) {
 			},
 			reqBody:  `{"phone":"12345678902"}`,
 			wantCode: http.StatusOK,
-			wantBody: web.Result{
+			wantBody: result.Result{
 				Code: 200,
 				Data: nil,
 				Msg:  "发送成功",
@@ -64,7 +64,7 @@ func TestUserHandler_e2e_SendLoginSMSCode(t *testing.T) {
 			},
 			reqBody:  `{"phone":"12345678902"}`,
 			wantCode: http.StatusOK,
-			wantBody: web.Result{
+			wantBody: result.Result{
 				Code: 200,
 				Data: nil,
 				Msg:  "发送太频繁",
@@ -83,7 +83,7 @@ func TestUserHandler_e2e_SendLoginSMSCode(t *testing.T) {
 
 			server.ServeHTTP(resp, req)
 
-			var webRes web.Result
+			var webRes result.Result
 			err = json.NewDecoder(resp.Body).Decode(&webRes)
 			require.NoError(t, err)
 			require.Equal(t, tc.wantCode, resp.Code)

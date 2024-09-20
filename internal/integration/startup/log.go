@@ -1,14 +1,14 @@
 package startup
 
 import (
-	"github.com/Andras5014/webook/pkg/logger"
+	"github.com/Andras5014/webook/pkg/logx"
 	"go.uber.org/zap"
 )
 
-func InitLogger() logger.Logger {
+func InitLogger() logx.Logger {
 	l, err := zap.NewDevelopment()
 	if err != nil {
 		panic(err)
 	}
-	return logger.NewZapLogger(l)
+	return logx.NewZapLogger(l)
 }

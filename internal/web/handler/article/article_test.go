@@ -1,4 +1,4 @@
-package web
+package article
 
 import (
 	"bytes"
@@ -7,6 +7,7 @@ import (
 	"github.com/Andras5014/webook/internal/domain"
 	"github.com/Andras5014/webook/internal/service"
 	svcmocks "github.com/Andras5014/webook/internal/service/mocks"
+	"github.com/Andras5014/webook/internal/web/result"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -24,7 +25,7 @@ func TestArticleHandler_Publish(t *testing.T) {
 		reqBody string
 
 		wantCode int
-		wantRes  Result
+		wantRes  result.Result
 	}{
 		{
 			name: "新建并发表",
@@ -46,7 +47,7 @@ func TestArticleHandler_Publish(t *testing.T) {
 }
 `,
 			wantCode: http.StatusOK,
-			wantRes: Result{
+			wantRes: result.Result{
 				Code: 0,
 				Data: float64(1),
 				Msg:  "ok",
@@ -72,7 +73,7 @@ func TestArticleHandler_Publish(t *testing.T) {
 }
 `,
 			wantCode: http.StatusOK,
-			wantRes: Result{
+			wantRes: result.Result{
 				Code: 5,
 				Msg:  "系统错误",
 			},
@@ -98,7 +99,7 @@ func TestArticleHandler_Publish(t *testing.T) {
 			server.ServeHTTP(resp, req)
 
 			assert.Equal(t, tc.wantCode, resp.Code)
-			var webRes Result
+			var webRes result.Result
 			err = json.NewDecoder(resp.Body).Decode(&webRes)
 			assert.NoError(t, err)
 			assert.Equal(t, tc.wantRes, webRes)

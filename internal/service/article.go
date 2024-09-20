@@ -5,7 +5,7 @@ import (
 	"errors"
 	"github.com/Andras5014/webook/internal/domain"
 	"github.com/Andras5014/webook/internal/repository/article"
-	"github.com/Andras5014/webook/pkg/logger"
+	"github.com/Andras5014/webook/pkg/logx"
 )
 
 type ArticleService interface {
@@ -23,17 +23,17 @@ type articleService struct {
 	readerRepo article.ReaderRepository
 	authorRepo article.AuthorRepository
 
-	logger logger.Logger
+	logger logx.Logger
 }
 
-func NewArticleService(repo article.Repository, l logger.Logger) ArticleService {
+func NewArticleService(repo article.Repository, l logx.Logger) ArticleService {
 	return &articleService{
 		repo:   repo,
 		logger: l,
 	}
 }
 
-func NewArticleServiceV1(readerRepo article.ReaderRepository, authorRepo article.AuthorRepository, l logger.Logger) ArticleService {
+func NewArticleServiceV1(readerRepo article.ReaderRepository, authorRepo article.AuthorRepository, l logx.Logger) ArticleService {
 	return &articleService{
 		readerRepo: readerRepo,
 		authorRepo: authorRepo,
@@ -74,7 +74,7 @@ func (a *articleService) PublishV1(ctx context.Context, article domain.Article) 
 	// 保存到线上库并重试处理
 	err = a.retrySaveToReaderRepo(ctx, article, 3)
 	if err != nil {
-		a.logger.Error("保存到线上库失败", logger.Any("article_id", article.Id), logger.Error(err))
+		a.logger.Error("保存到线上库失败", logx.Any("article_id", article.Id), logx.Error(err))
 		return id, err
 	}
 	return id, nil
@@ -94,7 +94,7 @@ func (a *articleService) retrySaveToReaderRepo(ctx context.Context, art domain.A
 		if errors.Is(err, nil) {
 			return nil
 		}
-		a.logger.Error("保存到 readerRepo 失败", logger.Any("article_id", art.Id), logger.Any("retry", i), logger.Error(err))
+		a.logger.Error("保存到 readerRepo 失败", logx.Any("article_id", art.Id), logx.Any("retry", i), logx.Error(err))
 	}
 	return err
 }

@@ -9,7 +9,9 @@ import (
 	"github.com/Andras5014/webook/internal/repository/dao"
 	article2 "github.com/Andras5014/webook/internal/repository/dao/article"
 	"github.com/Andras5014/webook/internal/service"
-	"github.com/Andras5014/webook/internal/web"
+	article3 "github.com/Andras5014/webook/internal/web/handler/article"
+	"github.com/Andras5014/webook/internal/web/handler/oauth2"
+	"github.com/Andras5014/webook/internal/web/handler/user"
 	ijwt "github.com/Andras5014/webook/internal/web/jwt"
 	"github.com/Andras5014/webook/ioc"
 	"github.com/gin-gonic/gin"
@@ -40,9 +42,9 @@ func InitWebServer() *gin.Engine {
 		ioc.InitLogger,
 		ijwt.NewRedisJWTHandler,
 
-		web.NewUserHandler,
-		web.NewOAuth2WeChatHandler,
-		web.NewArticleHandler,
+		user.NewUserHandler,
+		oauth2.NewOAuth2WeChatHandler,
+		article3.NewArticleHandler,
 		ioc.InitWebServer,
 		ioc.InitMiddlewares,
 		ioc.InitLimiter,

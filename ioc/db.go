@@ -3,7 +3,7 @@ package ioc
 import (
 	"github.com/Andras5014/webook/config"
 	"github.com/Andras5014/webook/internal/repository/dao"
-	"github.com/Andras5014/webook/pkg/logger"
+	"github.com/Andras5014/webook/pkg/logx"
 	"time"
 
 	"gorm.io/driver/mysql"
@@ -11,7 +11,7 @@ import (
 	glogger "gorm.io/gorm/logger"
 )
 
-func InitDB(cfg *config.Config, l logger.Logger) *gorm.DB {
+func InitDB(cfg *config.Config, l logx.Logger) *gorm.DB {
 
 	db, err := gorm.Open(mysql.Open(cfg.DB.DSN), &gorm.Config{
 		Logger: glogger.New(gormLoggerFunc(l.Debug), glogger.Config{
@@ -31,8 +31,8 @@ func InitDB(cfg *config.Config, l logger.Logger) *gorm.DB {
 	return db
 }
 
-type gormLoggerFunc func(msg string, fields ...logger.Field)
+type gormLoggerFunc func(msg string, fields ...logx.Field)
 
 func (g gormLoggerFunc) Printf(msg string, fields ...interface{}) {
-	g(msg, logger.Field{Key: "fields", Value: fields})
+	g(msg, logx.Field{Key: "fields", Value: fields})
 }

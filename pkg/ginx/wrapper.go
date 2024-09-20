@@ -1,27 +1,27 @@
 package ginx
 
 import (
+	"fmt"
+	"github.com/Andras5014/webook/pkg/logx"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-func WrapBody[T any](fn func(ctx *gin.Context, req T) (Result, error)) gin.HandlerFunc {
+func WrapBody[T any](l logx.Logger, fn func(ctx *gin.Context, req T) (Result, error)) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req T
 		if err := ctx.ShouldBindJSON(&req); err != nil {
-			ctx.JSON(400, Result{Code: 400, Msg: err.Error()})
+			ctx.JSON(http.StatusOK, InvalidParam())
 			return
 		}
 		res, err := fn(ctx, req)
 		if err != nil {
-			return
+			l.WithCtx(ctx).Error("handle http error: ",
+				logx.Error(err),
+				logx.Any("path", ctx.Request.URL.Path),
+				logx.Any("route", fmt.Sprintf("%s %s", ctx.Request.Method, ctx.FullPath())),
+			)
 		}
 		ctx.JSON(http.StatusOK, res)
 	}
-}
-
-type Result struct {
-	Code int    `json:"code"`
-	Msg  string `json:"msg"`
-	Data any    `json:"data"`
 }
