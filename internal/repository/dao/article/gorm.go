@@ -12,6 +12,13 @@ type GormArticleDAO struct {
 	db *gorm.DB
 }
 
+func (g *GormArticleDAO) FindByAuthorId(Dao context.Context, id int64, offset int, limit int) ([]Article, error) {
+	var arts []Article
+	// orderby 命中索引
+	err := g.db.WithContext(Dao).Where("author_id = ?", id).Limit(limit).Offset(offset).Order("updated_at DESC").Find(&arts).Error
+	return arts, err
+}
+
 func NewArticleDAO(db *gorm.DB) ArticleDAO {
 	return &GormArticleDAO{db: db}
 }

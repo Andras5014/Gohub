@@ -26,6 +26,11 @@ type MongoDBDAO struct {
 	idGen   IDGenerator
 }
 
+func (m *MongoDBDAO) FindByAuthorId(Dao context.Context, id int64, offset int, limit int) ([]Article, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 func NewMongoDBDAO(db *mongo.Database, node *snowflake.Node) ArticleDAO {
 	return &MongoDBDAO{
 		col:     db.Collection("articles"),

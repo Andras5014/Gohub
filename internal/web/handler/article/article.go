@@ -5,6 +5,7 @@ import (
 	"github.com/Andras5014/webook/internal/service"
 	"github.com/Andras5014/webook/internal/web/handler"
 	"github.com/Andras5014/webook/internal/web/result"
+	"github.com/Andras5014/webook/pkg/ginx"
 	"github.com/Andras5014/webook/pkg/logx"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -23,14 +24,15 @@ func NewArticleHandler(svc service.ArticleService, logger logx.Logger) *Handler 
 		logger: logger,
 	}
 }
-func (a *Handler) RegisterRoutes(engine *gin.Engine) {
+func (h *Handler) RegisterRoutes(engine *gin.Engine) {
 	ug := engine.Group("/articles")
-	ug.POST("/edit", a.Edit)
-	ug.POST("/publish", a.Publish)
-	ug.POST("/withdraw", a.Withdraw)
+	ug.POST("/edit", h.Edit)
+	ug.POST("/publish", h.Publish)
+	ug.POST("/withdraw", h.Withdraw)
+	ug.POST("/list", ginx.WrapBody(h.logger, h.List))
 }
 
-func (a *Handler) Edit(ctx *gin.Context) {
+func (h *Handler) Edit(ctx *gin.Context) {
 
 	var req articleReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -40,13 +42,13 @@ func (a *Handler) Edit(ctx *gin.Context) {
 	// 检测输入
 	//aid := ctx.MustGet("userId").(int64)
 	authorId := ctx.GetInt64("userId")
-	id, err := a.svc.Save(ctx, req.toDomain(authorId))
+	id, err := h.svc.Save(ctx, req.toDomain(authorId))
 	if err != nil {
 		ctx.JSON(http.StatusOK, result.Result{
 			Code: 5,
 			Msg:  "系统错误",
 		})
-		a.logger.Error("保存文章失败", logx.Error(err))
+		h.logger.Error("保存文章失败", logx.Error(err))
 		return
 	}
 	ctx.JSON(http.StatusOK, result.Result{
@@ -55,7 +57,7 @@ func (a *Handler) Edit(ctx *gin.Context) {
 	})
 }
 
-func (a *Handler) Publish(ctx *gin.Context) {
+func (h *Handler) Publish(ctx *gin.Context) {
 	var req articleReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		return
@@ -63,13 +65,13 @@ func (a *Handler) Publish(ctx *gin.Context) {
 	// 检测输入
 	//aid := ctx.MustGet("userId").(int64)
 	authorId := ctx.GetInt64("userId")
-	id, err := a.svc.Publish(ctx, req.toDomain(authorId))
+	id, err := h.svc.Publish(ctx, req.toDomain(authorId))
 	if err != nil {
 		ctx.JSON(http.StatusOK, result.Result{
 			Code: 5,
 			Msg:  "系统错误",
 		})
-		a.logger.Error("发表帖子失败", logx.Error(err))
+		h.logger.Error("发表帖子失败", logx.Error(err))
 		return
 	}
 	ctx.JSON(http.StatusOK, result.Result{
@@ -78,7 +80,7 @@ func (a *Handler) Publish(ctx *gin.Context) {
 	})
 }
 
-func (a *Handler) Withdraw(ctx *gin.Context) {
+func (h *Handler) Withdraw(ctx *gin.Context) {
 	var req articleReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		return
@@ -86,19 +88,24 @@ func (a *Handler) Withdraw(ctx *gin.Context) {
 	// 检测输入
 	//aid := ctx.MustGet("userId").(int64)
 	authorId := ctx.GetInt64("userId")
-	id, err := a.svc.Withdraw(ctx, req.toDomain(authorId))
+	id, err := h.svc.Withdraw(ctx, req.toDomain(authorId))
 	if err != nil {
 		ctx.JSON(http.StatusOK, result.Result{
 			Code: 5,
 			Msg:  "系统错误",
 		})
-		a.logger.Error("发表帖子失败", logx.Error(err))
+		h.logger.Error("发表帖子失败", logx.Error(err))
 		return
 	}
 	ctx.JSON(http.StatusOK, result.Result{
 		Msg:  "ok",
 		Data: id,
 	})
+}
+
+func (h *Handler) List(ctx *gin.Context, req ListReq) (ginx.Result, error) {
+	id := ctx.MustGet("userId").(int64)
+	res, err := h.svc.List(ctx, id, req.Offset, req.Limit)
 }
 
 type articleReq struct {

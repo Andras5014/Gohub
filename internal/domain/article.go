@@ -1,11 +1,15 @@
 package domain
 
+import "time"
+
 type Article struct {
-	Id      int64
-	Title   string
-	Content string
-	Author  Author
-	Status  ArticleStatus
+	Id        int64
+	Title     string
+	Content   string
+	Author    Author
+	Status    ArticleStatus
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type ArticleStatus uint8
@@ -17,6 +21,13 @@ const (
 	ArticleStatusPrivate
 )
 
+func (a Article) Abstract() string {
+	cs := []rune(a.Content)
+	if len(cs) < 100 {
+		return string(cs)
+	}
+	return string(cs[:100])
+}
 func (s ArticleStatus) ToUint8() uint8 {
 	return uint8(s)
 }
