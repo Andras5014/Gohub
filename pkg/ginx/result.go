@@ -26,3 +26,9 @@ func InvalidParam() Result {
 		Msg:  "参数错误",
 	}
 }
+func SystemError() Result {
+	return Result{
+		Code: 5,
+		Msg:  "系统错误",
+	}
+}

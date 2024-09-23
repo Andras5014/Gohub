@@ -25,3 +25,16 @@ func WrapBody[T any](l logx.Logger, fn func(ctx *gin.Context, req T) (Result, er
 		ctx.JSON(http.StatusOK, res)
 	}
 }
+func Wrap(l logx.Logger, fn func(ctx *gin.Context) (Result, error)) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		res, err := fn(ctx)
+		if err != nil {
+			l.WithCtx(ctx).Error("handle http error: ",
+				logx.Error(err),
+				logx.Any("path", ctx.Request.URL.Path),
+				logx.Any("route", fmt.Sprintf("%s %s", ctx.Request.Method, ctx.FullPath())),
+			)
+		}
+		ctx.JSON(http.StatusOK, res)
+	}
+}

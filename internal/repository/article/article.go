@@ -7,6 +7,7 @@ import (
 	dao "github.com/Andras5014/webook/internal/repository/dao/article"
 	"github.com/Andras5014/webook/pkg/logx"
 	"github.com/ecodeclub/ekit/slice"
+	"github.com/gin-gonic/gin"
 	"time"
 )
 
@@ -19,6 +20,7 @@ type Repository interface {
 	SyncV1(ctx context.Context, article domain.Article) (int64, error)
 	SyncStatus(ctx context.Context, article domain.Article) (int64, error)
 	List(ctx context.Context, id int64, offset int, limit int) ([]domain.Article, error)
+	GetById(ctx *gin.Context, id int64) (domain.Article, error)
 }
 type CacheArticleRepository struct {
 	dao dao.ArticleDAO
@@ -29,6 +31,11 @@ type CacheArticleRepository struct {
 
 	cache cache.ArticleCache
 	l     logx.Logger
+}
+
+func (c *CacheArticleRepository) GetById(ctx *gin.Context, id int64) (domain.Article, error) {
+	//TODO implement me
+	panic("implement me")
 }
 
 func NewArticleRepository(dao dao.ArticleDAO, cache cache.ArticleCache, l logx.Logger) Repository {
