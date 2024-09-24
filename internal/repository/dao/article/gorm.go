@@ -139,3 +139,14 @@ func (g *GormArticleDAO) SyncStatus(ctx context.Context, article Article) (int64
 	})
 	return article.Id, err
 }
+func (g *GormArticleDAO) GetById(ctx context.Context, id int64) (Article, error) {
+	var article Article
+	err := g.db.WithContext(ctx).Where("id = ?", id).First(&article).Error
+	return article, err
+}
+
+func (g *GormArticleDAO) GetPubById(ctx context.Context, id int64) (PublishedArticle, error) {
+	var pubArt PublishedArticle
+	err := g.db.WithContext(ctx).Where("id = ?", id).First(&pubArt).Error
+	return pubArt, err
+}

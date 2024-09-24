@@ -19,12 +19,16 @@ var _ handler.Handler = &Handler{}
 type Handler struct {
 	svc    service.ArticleService
 	logger logx.Logger
+
+	intrSvc service.InteractiveService
+	biz     string
 }
 
 func NewArticleHandler(svc service.ArticleService, logger logx.Logger) *Handler {
 	return &Handler{
 		svc:    svc,
 		logger: logger,
+		biz:    "article",
 	}
 }
 func (h *Handler) RegisterRoutes(engine *gin.Engine) {

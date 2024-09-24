@@ -6,7 +6,6 @@ import (
 	"github.com/Andras5014/webook/internal/domain"
 	"github.com/Andras5014/webook/internal/repository/article"
 	"github.com/Andras5014/webook/pkg/logx"
-	"github.com/gin-gonic/gin"
 )
 
 type ArticleService interface {
@@ -15,7 +14,8 @@ type ArticleService interface {
 	PublishV1(ctx context.Context, article domain.Article) (int64, error)
 	Withdraw(ctx context.Context, article domain.Article) (int64, error)
 	List(ctx context.Context, id int64, offset int, limit int) ([]domain.Article, error)
-	GetById(ctx *gin.Context, id int64) (domain.Article, error)
+	GetById(ctx context.Context, id int64) (domain.Article, error)
+	GetPubById(ctx context.Context, id int64) (domain.Article, error)
 }
 
 type articleService struct {
@@ -27,6 +27,15 @@ type articleService struct {
 	authorRepo article.AuthorRepository
 
 	logger logx.Logger
+}
+
+func (a *articleService) GetPubById(ctx context.Context, id int64) (domain.Article, error) {
+	art, err := a.repo.GetPubById(ctx, id)
+	if err != nil {
+		return domain.Article{}, err
+	}
+	// todo 这里需要处理批量
+	return art, nil
 }
 
 func NewArticleService(repo article.Repository, l logx.Logger) ArticleService {
@@ -86,7 +95,7 @@ func (a *articleService) PublishV1(ctx context.Context, article domain.Article) 
 func (a *articleService) List(ctx context.Context, id int64, offset int, limit int) ([]domain.Article, error) {
 	return a.repo.List(ctx, id, offset, limit)
 }
-func (a *articleService) GetById(ctx *gin.Context, id int64) (domain.Article, error) {
+func (a *articleService) GetById(ctx context.Context, id int64) (domain.Article, error) {
 	return a.repo.GetById(ctx, id)
 }
 

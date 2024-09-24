@@ -3,11 +3,11 @@ package article
 import (
 	"context"
 	"github.com/Andras5014/webook/internal/domain"
+	"github.com/Andras5014/webook/internal/repository"
 	"github.com/Andras5014/webook/internal/repository/cache"
 	dao "github.com/Andras5014/webook/internal/repository/dao/article"
 	"github.com/Andras5014/webook/pkg/logx"
 	"github.com/ecodeclub/ekit/slice"
-	"github.com/gin-gonic/gin"
 	"time"
 )
 
@@ -19,8 +19,12 @@ type Repository interface {
 	Sync(ctx context.Context, article domain.Article) (int64, error)
 	SyncV1(ctx context.Context, article domain.Article) (int64, error)
 	SyncStatus(ctx context.Context, article domain.Article) (int64, error)
+
+	// List 制作库
 	List(ctx context.Context, id int64, offset int, limit int) ([]domain.Article, error)
-	GetById(ctx *gin.Context, id int64) (domain.Article, error)
+	GetById(ctx context.Context, id int64) (domain.Article, error)
+
+	GetPubById(ctx context.Context, id int64) (domain.Article, error)
 }
 type CacheArticleRepository struct {
 	dao dao.ArticleDAO
@@ -29,13 +33,42 @@ type CacheArticleRepository struct {
 	authorDAO dao.AuthorDAO
 	readerDAO dao.ReaderDAO
 
+	userRepo repository.UserRepository
+
 	cache cache.ArticleCache
 	l     logx.Logger
 }
 
-func (c *CacheArticleRepository) GetById(ctx *gin.Context, id int64) (domain.Article, error) {
-	//TODO implement me
-	panic("implement me")
+func (c *CacheArticleRepository) GetPubById(ctx context.Context, id int64) (domain.Article, error) {
+	pubArt, err := c.dao.GetPubById(ctx, id)
+	if err != nil {
+		return domain.Article{}, err
+	}
+	user, err := c.userRepo.FindById(ctx, pubArt.AuthorId)
+	if err != nil {
+		return domain.Article{}, err
+	}
+	return domain.Article{
+		Id: pubArt.Id,
+		Author: domain.Author{
+			Id:   user.Id,
+			Name: user.NickName,
+		},
+		Content:   pubArt.Content,
+		Title:     pubArt.Title,
+		Status:    domain.ArticleStatus(pubArt.Status),
+		CreatedAt: time.UnixMilli(pubArt.CreatedAt),
+		UpdatedAt: time.UnixMilli(pubArt.UpdatedAt),
+	}, nil
+}
+
+func (c *CacheArticleRepository) GetById(ctx context.Context, id int64) (domain.Article, error) {
+	data, err := c.dao.GetById(ctx, id)
+	if err != nil {
+		return domain.Article{}, err
+	}
+	return c.toDomain(data), nil
+
 }
 
 func NewArticleRepository(dao dao.ArticleDAO, cache cache.ArticleCache, l logx.Logger) Repository {
