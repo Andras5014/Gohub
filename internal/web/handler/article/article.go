@@ -39,6 +39,9 @@ func (h *Handler) RegisterRoutes(engine *gin.Engine) {
 	ug.POST("/withdraw", h.Withdraw)
 	ug.POST("/list", ginx.WrapBody(h.logger, h.List))
 	ug.GET("/detail/:id", ginx.Wrap(h.logger, h.Detail))
+
+	pub := engine.Group("/pub")
+	pub.GET("/:id", ginx.Wrap(h.logger, h.PubDetail))
 }
 
 func (h *Handler) Edit(ctx *gin.Context) {
@@ -162,6 +165,56 @@ func (h *Handler) Detail(ctx *gin.Context) (ginx.Result, error) {
 			UpdatedAt: article.UpdatedAt.String(),
 			Status:    article.Status.ToUint8(),
 			Content:   article.Content,
+		},
+	}, nil
+}
+
+// PubDetail 提供发布详情的接口。
+// 通过文章ID获取发布的详细信息，并增加阅读计数。
+// 参数:
+//   - ctx: gin的上下文，包含请求信息及各种实用方法。
+//
+// 返回值:
+//   - ginx.Result: 包含请求结果的数据结构。
+//   - error: 错误信息，如果执行过程中出现错误。
+func (h *Handler) PubDetail(ctx *gin.Context) (ginx.Result, error) {
+	// 从URL参数中提取文章ID字符串
+	idStr := ctx.Param("id")
+	// 将ID字符串转换为int64类型
+	id, err := strconv.ParseInt(idStr, 10, 64)
+	if err != nil {
+		// 如果转换失败，返回参数无效错误
+		return ginx.InvalidParam(), err
+	}
+	// 根据ID获取发布文章详情
+	article, err := h.svc.GetPubById(ctx, id)
+	if err != nil {
+		// 如果获取文章详情失败，返回系统错误
+		return ginx.SystemError(), err
+	}
+
+	// 异步增加阅读计数
+	go func() {
+		// 调用内部服务增加阅读计数
+		er := h.intrSvc.IncrReadCnt(ctx, h.biz, id)
+		if er != nil {
+			// 如果增加阅读计数失败，记录错误日志
+			h.logger.Error("增加阅读计数失败", logx.Error(er), logx.Any("aid", id))
+			return
+		}
+	}()
+
+	// 返回文章详情结果
+	return ginx.Result{
+		Data: ArticleVO{
+			Id:         article.Id,
+			Title:      article.Title,
+			CreatedAt:  article.CreatedAt.String(),
+			UpdatedAt:  article.UpdatedAt.String(),
+			Status:     article.Status.ToUint8(),
+			Abstract:   article.Abstract(),
+			AuthorId:   article.Author.Id,
+			AuthorName: article.Author.Name,
 		},
 	}, nil
 }
