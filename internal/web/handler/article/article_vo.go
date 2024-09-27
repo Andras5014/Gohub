@@ -11,7 +11,13 @@ type ArticleVO struct {
 	CreatedAt  string `json:"createdAt"`
 	UpdatedAt  string `json:"updatedAt"`
 }
+
 type ListReq struct {
 	Offset int `json:"offset"`
 	Limit  int `json:"limit"`
+}
+
+type LikeReq struct {
+	Id   int64 `json:"id"`
+	Like bool  `json:"like"`
 }

@@ -34,14 +34,19 @@ func NewArticleHandler(svc service.ArticleService, logger logx.Logger) *Handler 
 func (h *Handler) RegisterRoutes(engine *gin.Engine) {
 	// 用户对自己操作
 	ug := engine.Group("/articles")
-	ug.POST("/edit", h.Edit)
-	ug.POST("/publish", h.Publish)
-	ug.POST("/withdraw", h.Withdraw)
-	ug.POST("/list", ginx.WrapBody(h.logger, h.List))
-	ug.GET("/detail/:id", ginx.Wrap(h.logger, h.Detail))
+	{
+		ug.POST("/edit", h.Edit)
+		ug.POST("/publish", h.Publish)
+		ug.POST("/withdraw", h.Withdraw)
+		ug.POST("/list", ginx.WrapBody(h.logger, h.List))
+		ug.GET("/detail/:id", ginx.Wrap(h.logger, h.Detail))
+	}
 
 	pub := engine.Group("/pub")
-	pub.GET("/:id", ginx.Wrap(h.logger, h.PubDetail))
+	{
+		pub.GET("/:id", ginx.Wrap(h.logger, h.PubDetail))
+		pub.POST("/like", ginx.WrapBody(h.logger, h.Like))
+	}
 }
 
 func (h *Handler) Edit(ctx *gin.Context) {
@@ -217,6 +222,22 @@ func (h *Handler) PubDetail(ctx *gin.Context) (ginx.Result, error) {
 			AuthorName: article.Author.Name,
 		},
 	}, nil
+}
+
+func (h *Handler) Like(ctx *gin.Context, req LikeReq) (ginx.Result, error) {
+	Uid := ctx.GetInt64("userId")
+	var err error
+	if req.Like {
+		// 点赞
+		err = h.intrSvc.Like(ctx, h.biz, req.Id, Uid)
+	} else {
+		// 取消点赞
+		err = h.intrSvc.CancelLike(ctx, h.biz, req.Id, Uid)
+	}
+	if err != nil {
+		return ginx.SystemError(), err
+	}
+	return ginx.Success(), nil
 }
 
 type articleReq struct {

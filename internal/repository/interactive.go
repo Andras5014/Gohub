@@ -9,6 +9,8 @@ import (
 
 type InteractiveRepository interface {
 	IncrReadCnt(ctx context.Context, biz string, id int64) error
+	IncrLike(ctx context.Context, biz string, id int64, uid int64) error
+	DecrLike(ctx context.Context, biz string, id int64, uid int64) error
 }
 
 type CacheInteractiveRepository struct {
@@ -30,5 +32,21 @@ func (c *CacheInteractiveRepository) IncrReadCnt(ctx context.Context, biz string
 	if err != nil {
 		return err
 	}
-	return c.cache.IncrReadCnt(ctx, biz, id)
+	return c.cache.IncrReadCntIfPresent(ctx, biz, id)
+}
+
+func (c *CacheInteractiveRepository) IncrLike(ctx context.Context, biz string, id int64, uid int64) error {
+	err := c.dao.InsertLikeInfo(ctx, biz, id, uid)
+	if err != nil {
+		return err
+	}
+	return c.cache.IncrLikeCntIfPresent(ctx, biz, id)
+}
+
+func (c *CacheInteractiveRepository) DecrLike(ctx context.Context, biz string, id int64, uid int64) error {
+	err := c.dao.DeleteLikeInfo(ctx, biz, id, uid)
+	if err != nil {
+		return err
+	}
+	return c.cache.DecrLikeCntIfPresent(ctx, biz, id)
 }
