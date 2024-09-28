@@ -11,12 +11,26 @@ type InteractiveRepository interface {
 	IncrReadCnt(ctx context.Context, biz string, id int64) error
 	IncrLike(ctx context.Context, biz string, id int64, uid int64) error
 	DecrLike(ctx context.Context, biz string, id int64, uid int64) error
+	AddCollectionItem(ctx context.Context, biz string, id int64, cid int64, uid int64) error
 }
 
 type CacheInteractiveRepository struct {
 	dao   dao.InteractiveDAO
 	cache cache.InteractiveCache
 	l     logx.Logger
+}
+
+func (c *CacheInteractiveRepository) AddCollectionItem(ctx context.Context, biz string, id int64, cid int64, uid int64) error {
+	err := c.dao.InsertCollectionBiz(ctx, dao.UserCollectionBiz{
+		Cid:   cid,
+		Uid:   uid,
+		Biz:   biz,
+		BizId: id,
+	})
+	if err != nil {
+		return err
+	}
+	return c.cache.IncrCollectCntIfPresent(ctx, biz, id)
 }
 
 func NewInteractiveRepository(dao dao.InteractiveDAO, cache cache.InteractiveCache, l logx.Logger) InteractiveRepository {

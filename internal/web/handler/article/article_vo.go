@@ -8,8 +8,15 @@ type ArticleVO struct {
 	AuthorId   int64  `json:"authorId"`
 	AuthorName string `json:"authorName"`
 	Status     uint8  `json:"status"`
-	CreatedAt  string `json:"createdAt"`
-	UpdatedAt  string `json:"updatedAt"`
+
+	ReadCnt    int64 `json:"readCnt"`
+	LikeCnt    int64 `json:"likeCnt"`
+	CollectCnt int64 `json:"collectCnt"`
+	Liked      bool  `json:"liked"`
+	Collected  bool  `json:"collected"`
+
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
 }
 
 type ListReq struct {

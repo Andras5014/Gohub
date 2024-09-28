@@ -11,10 +11,33 @@ type InteractiveDAO interface {
 	IncrReadCnt(ctx context.Context, biz string, bizId int64) error
 	InsertLikeInfo(ctx context.Context, biz string, id int64, uid int64) error
 	DeleteLikeInfo(ctx context.Context, biz string, id int64, uid int64) error
+	InsertCollectionBiz(ctx context.Context, cb UserCollectionBiz) error
 }
 
 type GormInteractiveDAO struct {
 	db *gorm.DB
+}
+
+func (g *GormInteractiveDAO) InsertCollectionBiz(ctx context.Context, cb UserCollectionBiz) error {
+	now := time.Now().UnixMilli()
+	return g.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		err := g.db.WithContext(ctx).Create(&cb).Error
+		if err != nil {
+			return err
+		}
+		return tx.WithContext(ctx).Clauses(clause.OnConflict{
+			DoUpdates: clause.Assignments(map[string]interface{}{
+				"collect_cnt": gorm.Expr("`collect_cnt` + 1"),
+				"updated_at":  now,
+			}),
+		}).Create(&Interactive{
+			Biz:        cb.Biz,
+			BizId:      cb.BizId,
+			CollectCnt: 1,
+			CreatedAt:  now,
+			UpdatedAt:  now,
+		}).Error
+	})
 }
 
 func (g *GormInteractiveDAO) InsertLikeInfo(ctx context.Context, biz string, id int64, uid int64) error {

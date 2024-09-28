@@ -10,6 +10,7 @@ import (
 	"github.com/Andras5014/webook/pkg/logx"
 	"github.com/ecodeclub/ekit/slice"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/sync/errgroup"
 	"net/http"
 	"strconv"
 )
@@ -183,18 +184,38 @@ func (h *Handler) Detail(ctx *gin.Context) (ginx.Result, error) {
 //   - ginx.Result: 包含请求结果的数据结构。
 //   - error: 错误信息，如果执行过程中出现错误。
 func (h *Handler) PubDetail(ctx *gin.Context) (ginx.Result, error) {
+	var (
+		id          int64
+		article     domain.Article
+		interactive domain.Interactive
+		eg          errgroup.Group
+		err         error
+	)
+
 	// 从URL参数中提取文章ID字符串
 	idStr := ctx.Param("id")
 	// 将ID字符串转换为int64类型
-	id, err := strconv.ParseInt(idStr, 10, 64)
+	id, err = strconv.ParseInt(idStr, 10, 64)
 	if err != nil {
 		// 如果转换失败，返回参数无效错误
 		return ginx.InvalidParam(), err
 	}
-	// 根据ID获取发布文章详情
-	article, err := h.svc.GetPubById(ctx, id)
+
+	eg.Go(func() error {
+		// 根据ID获取发布文章详情
+		article, err = h.svc.GetPubById(ctx, id)
+		return err
+	})
+
+	eg.Go(func() error {
+		uid := ctx.GetInt64("userId")
+		interactive, err = h.intrSvc.Get(ctx, h.biz, id, uid)
+		return err
+	})
+
+	err = eg.Wait()
 	if err != nil {
-		// 如果获取文章详情失败，返回系统错误
+		//查询出错
 		return ginx.SystemError(), err
 	}
 
@@ -220,6 +241,11 @@ func (h *Handler) PubDetail(ctx *gin.Context) (ginx.Result, error) {
 			Abstract:   article.Abstract(),
 			AuthorId:   article.Author.Id,
 			AuthorName: article.Author.Name,
+			LikeCnt:    interactive.LikeCnt,
+			CollectCnt: interactive.CollectCnt,
+			ReadCnt:    interactive.ReadCnt,
+			Liked:      interactive.Liked,
+			Collected:  interactive.Collected,
 		},
 	}, nil
 }
