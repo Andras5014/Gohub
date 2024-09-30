@@ -7,15 +7,48 @@ import (
 	"time"
 )
 
+var (
+	ErrRecordNotFound = gorm.ErrRecordNotFound
+)
+
 type InteractiveDAO interface {
 	IncrReadCnt(ctx context.Context, biz string, bizId int64) error
 	InsertLikeInfo(ctx context.Context, biz string, id int64, uid int64) error
 	DeleteLikeInfo(ctx context.Context, biz string, id int64, uid int64) error
 	InsertCollectionBiz(ctx context.Context, cb UserCollectionBiz) error
+	Get(ctx context.Context, biz string, id int64) (Interactive, error)
+	GetLikeInfo(ctx context.Context, biz string, id int64, uid int64) (UserLikeBiz, error)
+	GetCollectInfo(ctx context.Context, biz string, id int64, uid int64) (UserCollectionBiz, error)
 }
 
 type GormInteractiveDAO struct {
 	db *gorm.DB
+}
+
+func (g *GormInteractiveDAO) GetLikeInfo(ctx context.Context, biz string, id int64, uid int64) (UserLikeBiz, error) {
+	var res UserLikeBiz
+	err := g.db.WithContext(ctx).
+		Where("biz = ? AND biz_id = ? AND uid = ? AND status = ?",
+			biz, id, uid, 1).
+		First(&res).Error
+	return res, err
+}
+
+func (g *GormInteractiveDAO) GetCollectInfo(ctx context.Context, biz string, id int64, uid int64) (UserCollectionBiz, error) {
+	var res UserCollectionBiz
+	err := g.db.WithContext(ctx).
+		Where("biz = ? AND biz_id = ? AND uid = ?", biz, id, uid).
+		First(&res).Error
+	return res, err
+}
+
+func NewInteractiveDAO(db *gorm.DB) InteractiveDAO {
+	return &GormInteractiveDAO{db: db}
+}
+func (g *GormInteractiveDAO) Get(ctx context.Context, biz string, id int64) (Interactive, error) {
+	var intr Interactive
+	err := g.db.WithContext(ctx).Where("biz=? AND biz_id=?", biz, id).First(&intr).Error
+	return intr, err
 }
 
 func (g *GormInteractiveDAO) InsertCollectionBiz(ctx context.Context, cb UserCollectionBiz) error {
@@ -109,10 +142,6 @@ func (g *GormInteractiveDAO) IncrReadCnt(ctx context.Context, biz string, bizId 
 		CreatedAt: now,
 		UpdatedAt: now,
 	}).Error
-}
-
-func NewInteractiveDAO(db *gorm.DB) InteractiveDAO {
-	return &GormInteractiveDAO{db: db}
 }
 
 type Interactive struct {

@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"github.com/Andras5014/webook/internal/domain"
 	"github.com/redis/go-redis/v9"
+	"strconv"
+	"time"
 )
 
 const fieldReadCnt = "read_cnt"
@@ -54,13 +56,32 @@ func (i *InteractiveRedisCache) IncrCollectCntIfPresent(ctx context.Context, biz
 }
 
 func (i *InteractiveRedisCache) Get(ctx context.Context, biz string, bizId int64) (domain.Interactive, error) {
-	//TODO implement me
-	panic("implement me")
+	key := i.key(biz, bizId)
+	res, err := i.client.HGetAll(ctx, key).Result()
+	if err != nil {
+		return domain.Interactive{}, err
+	}
+	if len(res) == 0 {
+		return domain.Interactive{}, ErrKeyNotExist
+	}
+	var intr domain.Interactive
+	intr.CollectCnt, _ = strconv.ParseInt(res[fieldCollectCnt], 10, 64)
+	intr.LikeCnt, _ = strconv.ParseInt(res[fieldLikeCnt], 10, 64)
+	intr.ReadCnt, _ = strconv.ParseInt(res[fieldReadCnt], 10, 64)
+	return intr, nil
 }
 
 func (i *InteractiveRedisCache) Set(ctx context.Context, biz string, bizId int64, res domain.Interactive) error {
-	//TODO implement me
-	panic("implement me")
+	key := i.key(biz, bizId)
+	err := i.client.HSet(ctx, key, map[string]interface{}{
+		fieldCollectCnt: res.CollectCnt,
+		fieldLikeCnt:    res.LikeCnt,
+		fieldReadCnt:    res.ReadCnt,
+	}).Err()
+	if err != nil {
+		return err
+	}
+	return i.client.Expire(ctx, key, time.Minute*10).Err()
 }
 
 func (i *InteractiveRedisCache) key(biz string, id int64) string {

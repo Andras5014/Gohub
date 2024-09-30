@@ -25,11 +25,12 @@ type Handler struct {
 	biz     string
 }
 
-func NewArticleHandler(svc service.ArticleService, logger logx.Logger) *Handler {
+func NewArticleHandler(svc service.ArticleService, intrSvc service.InteractiveService, logger logx.Logger) *Handler {
 	return &Handler{
-		svc:    svc,
-		logger: logger,
-		biz:    "article",
+		svc:     svc,
+		intrSvc: intrSvc,
+		logger:  logger,
+		biz:     "article",
 	}
 }
 func (h *Handler) RegisterRoutes(engine *gin.Engine) {
