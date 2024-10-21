@@ -10,7 +10,7 @@ import (
 )
 
 type InteractiveRepository interface {
-	IncrReadCnt(ctx context.Context, biz string, id int64) error
+	IncrReadCnt(ctx context.Context, biz string, id int64, uid int64) error
 	IncrLike(ctx context.Context, biz string, id int64, uid int64) error
 	DecrLike(ctx context.Context, biz string, id int64, uid int64) error
 	AddCollectionItem(ctx context.Context, biz string, id int64, cid int64, uid int64) error
@@ -94,8 +94,8 @@ func NewInteractiveRepository(dao dao.InteractiveDAO, cache cache.InteractiveCac
 	}
 }
 
-func (c *CacheInteractiveRepository) IncrReadCnt(ctx context.Context, biz string, id int64) error {
-	err := c.dao.IncrReadCnt(ctx, biz, id)
+func (c *CacheInteractiveRepository) IncrReadCnt(ctx context.Context, biz string, id int64, uid int64) error {
+	err := c.dao.IncrReadCnt(ctx, biz, id, uid)
 	if err != nil {
 		return err
 	}

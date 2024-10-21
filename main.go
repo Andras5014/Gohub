@@ -13,8 +13,15 @@ import (
 func main() {
 	initViper()
 
-	server := InitWebServer()
-	server.Run(":8080")
+	app := InitApp()
+	for _, consumer := range app.Consumers {
+		err := consumer.Start()
+		if err != nil {
+			panic(err)
+		}
+
+	}
+	app.Server.Run(":8080")
 }
 
 func initViper() {

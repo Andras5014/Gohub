@@ -3,51 +3,84 @@
 package main
 
 import (
+	articleEvent "github.com/Andras5014/webook/internal/events/article"
 	"github.com/Andras5014/webook/internal/repository"
-	"github.com/Andras5014/webook/internal/repository/article"
+	articleRepo "github.com/Andras5014/webook/internal/repository/article"
 	"github.com/Andras5014/webook/internal/repository/cache"
 	"github.com/Andras5014/webook/internal/repository/dao"
-	article2 "github.com/Andras5014/webook/internal/repository/dao/article"
+	articleDao "github.com/Andras5014/webook/internal/repository/dao/article"
 	"github.com/Andras5014/webook/internal/service"
-	article3 "github.com/Andras5014/webook/internal/web/handler/article"
+	"github.com/Andras5014/webook/internal/web/handler/article"
 	"github.com/Andras5014/webook/internal/web/handler/oauth2"
 	"github.com/Andras5014/webook/internal/web/handler/user"
 	ijwt "github.com/Andras5014/webook/internal/web/jwt"
 	"github.com/Andras5014/webook/ioc"
-	"github.com/gin-gonic/gin"
 	"github.com/google/wire"
 )
 
-func InitWebServer() *gin.Engine {
+var interactiveSvcSet = wire.NewSet(
+	service.NewInteractiveService,
+	repository.NewInteractiveRepository,
+	cache.NewInteractiveCache,
+	dao.NewInteractiveDAO,
+)
+
+var userSvcSet = wire.NewSet(
+	service.NewUserService,
+	repository.NewUserRepository,
+	cache.NewUserCache,
+	dao.NewUserDAO,
+)
+
+var articleSvcSet = wire.NewSet(
+	service.NewArticleService,
+	articleRepo.NewArticleRepository,
+	articleDao.NewArticleDAO,
+	cache.NewRedisArticleCache,
+)
+var codeSvcProvider = wire.NewSet(
+	cache.NewCodeCache,
+	repository.NewCodeRepository,
+	service.NewCodeService,
+)
+
+var thirdPartySet = wire.NewSet(
+	ioc.InitConfig,
+
+	ioc.InitLogger,
+	ioc.InitDB,
+	ioc.InitRedis,
+	ioc.InitSmsService,
+	ioc.InitKafka,
+	ioc.InitSyncProducer,
+	ioc.InitConsumers,
+)
+
+func InitApp() *App {
 	wire.Build(
-		ioc.InitDB,
-		ioc.InitRedis,
-
-		dao.NewUserDAO,
-		article2.NewArticleDAO,
-
-		cache.NewUserCache,
-		cache.NewCodeCache,
-
-		repository.NewUserRepository,
-		repository.NewCodeRepository,
-		article.NewArticleRepository,
-
-		service.NewCodeService,
-		service.NewUserService,
-		service.NewArticleService,
-		ioc.InitSmsService,
-		ioc.InitOAuth2WeChatService,
-		ioc.InitConfig,
-		ioc.InitLogger,
-		ijwt.NewRedisJWTHandler,
+		//event
+		articleEvent.NewSaramaSyncProducer,
+		articleEvent.NewInteractiveReadEventConsumer,
 
 		user.NewUserHandler,
-		oauth2.NewOAuth2WeChatHandler,
-		article3.NewArticleHandler,
+		userSvcSet,
+
+		codeSvcProvider,
+
+		article.NewArticleHandler,
+		articleSvcSet,
+		interactiveSvcSet,
+		thirdPartySet,
+
 		ioc.InitWebServer,
 		ioc.InitMiddlewares,
 		ioc.InitLimiter,
+
+		oauth2.NewOAuth2WeChatHandler,
+		ioc.InitOAuth2WeChatService,
+		ijwt.NewRedisJWTHandler,
+
+		wire.Struct(new(App), "*"),
 	)
-	return new(gin.Engine)
+	return new(App)
 }

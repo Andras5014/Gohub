@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/Andras5014/webook/internal/domain"
+	articleEvent "github.com/Andras5014/webook/internal/events/article"
 	"github.com/Andras5014/webook/internal/repository/article"
 	"github.com/Andras5014/webook/pkg/logx"
 )
@@ -15,7 +16,7 @@ type ArticleService interface {
 	Withdraw(ctx context.Context, article domain.Article) (int64, error)
 	List(ctx context.Context, id int64, offset int, limit int) ([]domain.Article, error)
 	GetById(ctx context.Context, id int64) (domain.Article, error)
-	GetPubById(ctx context.Context, id int64) (domain.Article, error)
+	GetPubById(ctx context.Context, id, uid int64) (domain.Article, error)
 }
 
 type articleService struct {
@@ -27,21 +28,32 @@ type articleService struct {
 	authorRepo article.AuthorRepository
 
 	logger logx.Logger
+
+	producer articleEvent.Producer
 }
 
-func (a *articleService) GetPubById(ctx context.Context, id int64) (domain.Article, error) {
+func (a *articleService) GetPubById(ctx context.Context, id, uid int64) (domain.Article, error) {
 	art, err := a.repo.GetPubById(ctx, id)
-	if err != nil {
-		return domain.Article{}, err
+	if errors.Is(err, nil) {
+		go func() {
+			er := a.producer.ProduceReadEvent(ctx, articleEvent.ReadEvent{
+				ArticleId: id,
+				UserId:    uid,
+			})
+			if er != nil {
+				a.logger.Error("文章阅读事件写入失败", logx.Any("article_id", id), logx.Any("uid", uid), logx.Error(er))
+			}
+		}()
+
 	}
-	// todo 这里需要处理批量
-	return art, nil
+	return art, err
 }
 
-func NewArticleService(repo article.Repository, l logx.Logger) ArticleService {
+func NewArticleService(repo article.Repository, producer articleEvent.Producer, l logx.Logger) ArticleService {
 	return &articleService{
-		repo:   repo,
-		logger: l,
+		repo:     repo,
+		producer: producer,
+		logger:   l,
 	}
 }
 

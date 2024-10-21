@@ -26,6 +26,16 @@ type MongoDBDAO struct {
 	idGen   IDGenerator
 }
 
+func (m *MongoDBDAO) GetById(ctx context.Context, id int64) (Article, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MongoDBDAO) GetPubById(ctx context.Context, id int64) (PublishedArticle, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 func (m *MongoDBDAO) FindByAuthorId(Dao context.Context, id int64, offset int, limit int) ([]Article, error) {
 	//TODO implement me
 	panic("implement me")

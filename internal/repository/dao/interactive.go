@@ -12,7 +12,7 @@ var (
 )
 
 type InteractiveDAO interface {
-	IncrReadCnt(ctx context.Context, biz string, bizId int64) error
+	IncrReadCnt(ctx context.Context, biz string, bizId int64, uid int64) error
 	InsertLikeInfo(ctx context.Context, biz string, id int64, uid int64) error
 	DeleteLikeInfo(ctx context.Context, biz string, id int64, uid int64) error
 	InsertCollectionBiz(ctx context.Context, cb UserCollectionBiz) error
@@ -128,7 +128,7 @@ func (g *GormInteractiveDAO) DeleteLikeInfo(ctx context.Context, biz string, id 
 	})
 }
 
-func (g *GormInteractiveDAO) IncrReadCnt(ctx context.Context, biz string, bizId int64) error {
+func (g *GormInteractiveDAO) IncrReadCnt(ctx context.Context, biz string, bizId int64, uid int64) error {
 	now := time.Now().UnixMilli()
 	return g.db.WithContext(ctx).Clauses(clause.OnConflict{
 		DoUpdates: clause.Assignments(map[string]interface{}{

@@ -201,15 +201,15 @@ func (h *Handler) PubDetail(ctx *gin.Context) (ginx.Result, error) {
 		// 如果转换失败，返回参数无效错误
 		return ginx.InvalidParam(), err
 	}
-
+	uid := ctx.GetInt64("userId")
 	eg.Go(func() error {
 		// 根据ID获取发布文章详情
-		article, err = h.svc.GetPubById(ctx, id)
+		article, err = h.svc.GetPubById(ctx, id, uid)
 		return err
 	})
 
 	eg.Go(func() error {
-		uid := ctx.GetInt64("userId")
+
 		interactive, err = h.intrSvc.Get(ctx, h.biz, id, uid)
 		return err
 	})
@@ -223,7 +223,7 @@ func (h *Handler) PubDetail(ctx *gin.Context) (ginx.Result, error) {
 	// 异步增加阅读计数
 	go func() {
 		// 调用内部服务增加阅读计数
-		er := h.intrSvc.IncrReadCnt(ctx, h.biz, id)
+		er := h.intrSvc.IncrReadCnt(ctx, h.biz, id, uid)
 		if er != nil {
 			// 如果增加阅读计数失败，记录错误日志
 			h.logger.Error("增加阅读计数失败", logx.Error(er), logx.Any("aid", id))
