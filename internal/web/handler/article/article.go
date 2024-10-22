@@ -221,15 +221,15 @@ func (h *Handler) PubDetail(ctx *gin.Context) (ginx.Result, error) {
 	}
 
 	// 异步增加阅读计数
-	go func() {
-		// 调用内部服务增加阅读计数
-		er := h.intrSvc.IncrReadCnt(ctx, h.biz, id, uid)
-		if er != nil {
-			// 如果增加阅读计数失败，记录错误日志
-			h.logger.Error("增加阅读计数失败", logx.Error(er), logx.Any("aid", id))
-			return
-		}
-	}()
+	//go func() {
+	//	// 调用内部服务增加阅读计数
+	//	er := h.intrSvc.IncrReadCnt(ctx, h.biz, id, uid)
+	//	if er != nil {
+	//		// 如果增加阅读计数失败，记录错误日志
+	//		h.logger.Error("增加阅读计数失败", logx.Error(er), logx.Any("aid", id))
+	//		return
+	//	}
+	//}()
 
 	// 返回文章详情结果
 	return ginx.Result{

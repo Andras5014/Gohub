@@ -14,5 +14,5 @@ type RedisConfig struct {
 	Addr string `mapstructure:"addr"`
 }
 type KafkaConfig struct {
-	Addrs []string `mapstructure:"addr"`
+	Addrs []string `mapstructure:"addrs"`
 }

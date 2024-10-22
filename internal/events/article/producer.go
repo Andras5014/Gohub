@@ -6,6 +6,8 @@ import (
 	"github.com/IBM/sarama"
 )
 
+const TopicReadEvent = "article_read"
+
 type Producer interface {
 	ProduceReadEvent(ctx context.Context, event ReadEvent) error
 }
@@ -17,7 +19,7 @@ type KafkaProducer struct {
 func NewSaramaSyncProducer(producer sarama.SyncProducer) Producer {
 	return &KafkaProducer{
 		producer: producer,
-		topic:    "article_read",
+		topic:    TopicReadEvent,
 	}
 }
 

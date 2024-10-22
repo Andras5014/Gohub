@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+const ReadEventConsumerGroup = "article_read_event"
+
 type InteractiveReadEventConsumer struct {
 	client sarama.Client
 	repo   repository.InteractiveRepository
@@ -24,12 +26,12 @@ func NewInteractiveReadEventConsumer(client sarama.Client, repo repository.Inter
 	}
 }
 func (k *InteractiveReadEventConsumer) Start() error {
-	cg, err := sarama.NewConsumerGroupFromClient("interactive", k.client)
+	cg, err := sarama.NewConsumerGroupFromClient(ReadEventConsumerGroup, k.client)
 	if err != nil {
 		return err
 	}
 	go func() {
-		err := cg.Consume(context.Background(), []string{"article_read"}, saramax.NewHandler[ReadEvent](k.l, k.Consume))
+		err := cg.Consume(context.Background(), []string{TopicReadEvent}, saramax.NewHandler[ReadEvent](k.l, k.Consume))
 		if err != nil {
 			k.l.Error("消费消息失败", logx.Error(err))
 		}
@@ -40,5 +42,5 @@ func (k *InteractiveReadEventConsumer) Start() error {
 func (k *InteractiveReadEventConsumer) Consume(msg *sarama.ConsumerMessage, t ReadEvent) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	return k.repo.IncrReadCnt(ctx, "article", t.ArticleId, t.UserId)
+	return k.repo.IncrReadCnt(ctx, "article", t.ArticleId)
 }

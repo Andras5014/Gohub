@@ -60,7 +60,7 @@ func InitApp() *App {
 	wire.Build(
 		//event
 		articleEvent.NewSaramaSyncProducer,
-		articleEvent.NewInteractiveReadEventConsumer,
+		articleEvent.NewInteractiveReadEventBatchConsumer,
 
 		user.NewUserHandler,
 		userSvcSet,
