@@ -9,6 +9,7 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	glogger "gorm.io/gorm/logger"
+	"gorm.io/plugin/prometheus"
 )
 
 func InitDB(cfg *config.Config, l logx.Logger) *gorm.DB {
@@ -20,6 +21,17 @@ func InitDB(cfg *config.Config, l logx.Logger) *gorm.DB {
 			SlowThreshold:             time.Millisecond * 10,
 		}),
 	})
+	err = db.Use(prometheus.New(prometheus.Config{
+		DBName:          "webook",
+		RefreshInterval: 10,
+		StartServer:     false,
+		MetricsCollector: []prometheus.MetricsCollector{
+			&prometheus.MySQL{
+				VariableNames: []string{"Threads_running"},
+			},
+		},
+	}))
+
 	if err != nil {
 		panic(err)
 	}

@@ -3,17 +3,20 @@ package main
 import (
 	"fmt"
 	"github.com/fsnotify/fsnotify"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	_ "github.com/spf13/viper/remote"
 	"go.uber.org/zap"
 	_ "gorm.io/driver/mysql"
+	"net/http"
 )
 
 func main() {
 	initViper()
 
 	app := InitApp()
+	initPrometheus()
 	for _, consumer := range app.Consumers {
 		err := consumer.Start()
 		if err != nil {
@@ -22,6 +25,13 @@ func main() {
 
 	}
 	app.Server.Run(":8080")
+}
+
+func initPrometheus() {
+	go func() {
+		http.Handle("/metrics", promhttp.Handler())
+		http.ListenAndServe(":8081", nil)
+	}()
 }
 
 func initViper() {

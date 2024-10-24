@@ -9,6 +9,7 @@ import (
 	ijwt "github.com/Andras5014/webook/internal/web/jwt"
 	"github.com/Andras5014/webook/internal/web/middleware"
 	"github.com/Andras5014/webook/pkg/ginx/middlewares/logger"
+	"github.com/Andras5014/webook/pkg/ginx/middlewares/metric"
 	"github.com/Andras5014/webook/pkg/ginx/middlewares/ratelimit"
 	zapLogger "github.com/Andras5014/webook/pkg/logx"
 	ratelimit2 "github.com/Andras5014/webook/pkg/ratelimit"
@@ -34,6 +35,7 @@ func InitLimiter(redisClient redis.Cmdable) ratelimit2.Limiter {
 func InitMiddlewares(limiter ratelimit2.Limiter, jwtHdl ijwt.Handler, l zapLogger.Logger) []gin.HandlerFunc {
 	return []gin.HandlerFunc{
 		corsHdl(),
+		metric.NewBuilder("andras", "webook", "gin_http", "统计 gin 的 http 接口").Build(),
 		logger.NewBuilder(func(ctx context.Context, al *logger.AccessLog) {
 			l.Debug("HTTP Request", zapLogger.Field{
 				Key:   "al",

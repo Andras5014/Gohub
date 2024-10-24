@@ -63,7 +63,7 @@ func (b *BatchHandler[T]) ConsumeClaim(session sarama.ConsumerGroupSession, clai
 			}
 		}
 		cancel()
-		// 凑够batch size 就进行处理
+		// 凑够batch size 或者超时 就进行处理
 		err := b.fn(batch, ts)
 		if err != nil {
 			b.l.Error("处理失败", logx.Error(err))
