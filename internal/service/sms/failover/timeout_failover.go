@@ -10,6 +10,7 @@ type TimeoutFailoverSmsService struct {
 	svcs []sms.Service
 	// 连续超时个数
 	cnt int32
+
 	idx int32
 
 	//阈值

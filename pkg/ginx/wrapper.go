@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/Andras5014/webook/pkg/logx"
 	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus"
 	"net/http"
 )
 
@@ -37,4 +38,11 @@ func Wrap(l logx.Logger, fn func(ctx *gin.Context) (Result, error)) gin.HandlerF
 		}
 		ctx.JSON(http.StatusOK, res)
 	}
+}
+
+var vector prometheus.CounterVec
+
+func InitCounter(opts prometheus.CounterOpts) {
+	vector = *prometheus.NewCounterVec(opts, []string{"code"})
+	prometheus.MustRegister(&vector)
 }
