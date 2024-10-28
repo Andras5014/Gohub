@@ -6,8 +6,10 @@ import (
 	"github.com/Andras5014/webook/pkg/gormx"
 	"github.com/Andras5014/webook/pkg/logx"
 	"github.com/prometheus/client_golang/prometheus"
+
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/plugin/opentelemetry/tracing"
 	gormprometheus "gorm.io/plugin/prometheus"
 )
 
@@ -54,6 +56,14 @@ func InitDB(cfg *config.Config, l logx.Logger) *gorm.DB {
 	if err != nil {
 		panic(err)
 	}
+	db.Use(tracing.NewPlugin(tracing.WithDBName("echohub"),
+		tracing.WithQueryFormatter(func(query string) string {
+			l.Debug("query", logx.Any("query", query))
+			return query
+		}),
+		// 不记录metrics和查询参数
+		tracing.WithoutMetrics(),
+		tracing.WithoutQueryVariables()))
 
 	err = dao.InitTable(db)
 	if err != nil {
