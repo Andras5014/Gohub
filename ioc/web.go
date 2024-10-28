@@ -16,6 +16,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
+	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 	"time"
 )
 
@@ -35,7 +36,7 @@ func InitLimiter(redisClient redis.Cmdable) ratelimit2.Limiter {
 func InitMiddlewares(limiter ratelimit2.Limiter, jwtHdl ijwt.Handler, l zapLogger.Logger) []gin.HandlerFunc {
 	return []gin.HandlerFunc{
 		corsHdl(),
-		metric.NewBuilder("andras", "webook", "gin_http", "统计 gin 的 http 接口").Build(),
+		metric.NewBuilder("andras", "echohub", "gin_http", "统计 gin 的 http 接口").Build(),
 		logger.NewBuilder(func(ctx context.Context, al *logger.AccessLog) {
 			l.Debug("HTTP Request", zapLogger.Field{
 				Key:   "al",
@@ -44,6 +45,7 @@ func InitMiddlewares(limiter ratelimit2.Limiter, jwtHdl ijwt.Handler, l zapLogge
 		}).AllowReqBody().AllowRespBody().Build(),
 		ratelimit.NewBuilder(limiter).Build(),
 		middleware.NewLoginJWTMiddlewareBuilder(jwtHdl).Build(),
+		otelgin.Middleware("echohub"),
 	}
 }
 

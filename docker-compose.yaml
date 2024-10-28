@@ -63,3 +63,7 @@ services:
     ports:
       - "9411:9411"
 
+  grafana:
+    image: grafana/grafana-enterprise:latest
+    ports:
+      - "3000:3000"

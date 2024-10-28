@@ -1,7 +1,9 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"github.com/Andras5014/webook/ioc"
 	"github.com/fsnotify/fsnotify"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/pflag"
@@ -10,12 +12,14 @@ import (
 	"go.uber.org/zap"
 	_ "gorm.io/driver/mysql"
 	"net/http"
+	"time"
 )
 
 func main() {
 	initViper()
 
 	app := InitApp()
+	closeFunc := ioc.InitOtel()
 	initPrometheus()
 	for _, consumer := range app.Consumers {
 		err := consumer.Start()
@@ -24,7 +28,11 @@ func main() {
 		}
 
 	}
-	app.Server.Run(":8080")
+	server := app.Server
+	server.Run(":8080")
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+	closeFunc(ctx)
 }
 
 func initPrometheus() {
