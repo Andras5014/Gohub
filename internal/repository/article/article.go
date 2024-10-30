@@ -25,6 +25,9 @@ type Repository interface {
 	GetById(ctx context.Context, id int64) (domain.Article, error)
 
 	GetPubById(ctx context.Context, id int64) (domain.Article, error)
+
+	// ListPub 公开库
+	ListPub(ctx context.Context, start time.Time, offset int, limit int) ([]domain.Article, error)
 }
 type CacheArticleRepository struct {
 	dao dao.ArticleDAO
@@ -39,6 +42,31 @@ type CacheArticleRepository struct {
 	l     logx.Logger
 }
 
+func NewArticleRepository(dao dao.ArticleDAO, cache cache.ArticleCache, l logx.Logger) Repository {
+	return &CacheArticleRepository{
+		dao:   dao,
+		cache: cache,
+		l:     l,
+	}
+}
+
+func (c *CacheArticleRepository) ListPub(ctx context.Context, start time.Time, offset int, limit int) ([]domain.Article, error) {
+	arts, err := c.dao.ListPub(ctx, start, offset, limit)
+	if err != nil {
+		return nil, err
+	}
+	return slice.Map[dao.PublishedArticle, domain.Article](arts, func(idx int, src dao.PublishedArticle) domain.Article {
+		return c.toDomain(dao.Article{
+			Id:        src.Id,
+			AuthorId:  src.AuthorId,
+			Content:   src.Content,
+			Title:     src.Title,
+			Status:    src.Status,
+			CreatedAt: src.CreatedAt,
+			UpdatedAt: src.UpdatedAt,
+		})
+	}), nil
+}
 func (c *CacheArticleRepository) GetPubById(ctx context.Context, id int64) (domain.Article, error) {
 	pubArt, err := c.dao.GetPubById(ctx, id)
 	if err != nil {
@@ -71,13 +99,6 @@ func (c *CacheArticleRepository) GetById(ctx context.Context, id int64) (domain.
 
 }
 
-func NewArticleRepository(dao dao.ArticleDAO, cache cache.ArticleCache, l logx.Logger) Repository {
-	return &CacheArticleRepository{
-		dao:   dao,
-		cache: cache,
-		l:     l,
-	}
-}
 func (c *CacheArticleRepository) Create(ctx context.Context, article domain.Article) (int64, error) {
 	defer func() {
 		c.cache.DelFirstPage(ctx, article.Author.Id)

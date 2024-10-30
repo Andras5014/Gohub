@@ -12,6 +12,17 @@ type GormArticleDAO struct {
 	db *gorm.DB
 }
 
+func NewArticleDAO(db *gorm.DB) ArticleDAO {
+	return &GormArticleDAO{db: db}
+}
+
+func (g *GormArticleDAO) ListPub(ctx context.Context, start time.Time, offset int, limit int) ([]PublishedArticle, error) {
+	var pubArts []PublishedArticle
+	const ArticleStatusPublished = 2
+	err := g.db.WithContext(ctx).Where("updated_at < ? and status = ?", start.UnixMilli(), ArticleStatusPublished).Limit(limit).Offset(offset).Find(&pubArts).Error
+	return pubArts, err
+}
+
 func (g *GormArticleDAO) FindByAuthorId(Dao context.Context, id int64, offset int, limit int) ([]Article, error) {
 	var arts []Article
 	// orderby 命中索引
@@ -19,9 +30,6 @@ func (g *GormArticleDAO) FindByAuthorId(Dao context.Context, id int64, offset in
 	return arts, err
 }
 
-func NewArticleDAO(db *gorm.DB) ArticleDAO {
-	return &GormArticleDAO{db: db}
-}
 func (g *GormArticleDAO) Insert(ctx context.Context, article Article) (int64, error) {
 	now := time.Now().UnixMilli()
 	article.CreatedAt = now

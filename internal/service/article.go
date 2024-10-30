@@ -7,14 +7,16 @@ import (
 	articleEvent "github.com/Andras5014/webook/internal/events/article"
 	"github.com/Andras5014/webook/internal/repository/article"
 	"github.com/Andras5014/webook/pkg/logx"
+	"time"
 )
-
+//go:generate mockgen -destination=mocks/article.mock.go -package=svcmocks -source=./article.go
 type ArticleService interface {
 	Save(ctx context.Context, article domain.Article) (int64, error)
 	Publish(ctx context.Context, article domain.Article) (int64, error)
 	PublishV1(ctx context.Context, article domain.Article) (int64, error)
 	Withdraw(ctx context.Context, article domain.Article) (int64, error)
 	List(ctx context.Context, id int64, offset int, limit int) ([]domain.Article, error)
+	ListPub(ctx context.Context, start time.Time, offset int, limit int) ([]domain.Article, error)
 	GetById(ctx context.Context, id int64) (domain.Article, error)
 	GetPubById(ctx context.Context, id, uid int64) (domain.Article, error)
 }
@@ -30,6 +32,10 @@ type articleService struct {
 	logger logx.Logger
 
 	producer articleEvent.Producer
+}
+
+func (a *articleService) ListPub(ctx context.Context, start time.Time, offset int, limit int) ([]domain.Article, error) {
+	return a.repo.ListPub(ctx, start, offset, limit)
 }
 
 func (a *articleService) GetPubById(ctx context.Context, id, uid int64) (domain.Article, error) {
