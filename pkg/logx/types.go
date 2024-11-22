@@ -1,6 +1,9 @@
 package logx
 
-import "context"
+import (
+	"context"
+	"time"
+)
 
 type Logger interface {
 	Debug(msg string, args ...Field)
@@ -22,7 +25,13 @@ func Any(key string, value any) Field {
 		Value: value,
 	}
 }
+func String(key, value string) Field {
+	return Any(key, value)
+}
 
+func Duration(key string, value time.Duration) Field {
+	return Any(key, value)
+}
 func Error(err error) Field {
 	return Any("error", err)
 }

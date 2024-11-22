@@ -1,4 +1,7 @@
 .PHONY: docker
+
+
+
 docker:
 	-del /f webook
 	@go build -o webook .

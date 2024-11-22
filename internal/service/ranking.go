@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/Andras5014/webook/internal/domain"
+	"github.com/Andras5014/webook/internal/repository"
 	"github.com/ecodeclub/ekit/queue"
 	"github.com/ecodeclub/ekit/slice"
 	"math"
@@ -19,6 +19,7 @@ type BatchRankingService struct {
 	artSvc    ArticleService
 	intrSvc   InteractiveService
 	batchSize int
+	repo      repository.RankingRepository
 	scoreFunc func(likeCnt int64, updateTime time.Time) float64
 }
 
@@ -38,9 +39,7 @@ func (b *BatchRankingService) TopN(ctx context.Context, n int) error {
 	if err != nil {
 		return err
 	}
-	// todo 处理榜单
-	fmt.Println(arts)
-	return nil
+	return b.repo.ReplaceTopN(ctx, arts)
 }
 
 func (b *BatchRankingService) topN(ctx context.Context, n int) ([]domain.Article, error) {
