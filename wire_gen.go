@@ -63,14 +63,22 @@ func InitApp() *App {
 	engine := ioc.InitWebServer(v, userHandler, weChatHandler, articleHandler)
 	consumer := article3.NewInteractiveReadEventBatchConsumer(client, interactiveRepository, logger)
 	v2 := ioc.InitConsumers(consumer)
+	rankingService := service.NewRankingService(articleService, interactiveService)
+	universalClient := ioc.InitRedisUniversalClient(config)
+	redsync := ioc.InitRedSync(universalClient)
+	rankingJob := ioc.InitRankingJob(rankingService, redsync, logger)
+	cron := ioc.InitJobs(rankingJob, logger)
 	app := &App{
 		Server:    engine,
 		Consumers: v2,
+		Cron:      cron,
 	}
 	return app
 }
 
 // wire.go:
+
+var rankingSvcSet = wire.NewSet(cache.NewRedisRankingCache, repository.NewRankingRepository, service.NewRankingService)
 
 var interactiveSvcSet = wire.NewSet(service.NewInteractiveService, repository.NewInteractiveRepository, cache.NewInteractiveCache, dao.NewInteractiveDAO)
 
@@ -80,4 +88,4 @@ var articleSvcSet = wire.NewSet(service.NewArticleService, article2.NewArticleRe
 
 var codeSvcProvider = wire.NewSet(cache.NewCodeCache, repository.NewCodeRepository, service.NewCodeService)
 
-var thirdPartySet = wire.NewSet(ioc.InitConfig, ioc.InitLogger, ioc.InitDB, ioc.InitRedis, ioc.InitSmsService, ioc.InitKafka, ioc.InitSyncProducer, ioc.InitConsumers)
+var thirdPartySet = wire.NewSet(ioc.InitConfig, ioc.InitLogger, ioc.InitDB, ioc.InitRedis, ioc.InitRedisUniversalClient, ioc.InitRedSync, ioc.InitSmsService, ioc.InitKafka, ioc.InitSyncProducer, ioc.InitConsumers)

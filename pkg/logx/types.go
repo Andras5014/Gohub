@@ -29,6 +29,9 @@ func String(key, value string) Field {
 	return Any(key, value)
 }
 
+func Int64(key string, value int64) Field {
+	return Any(key, value)
+}
 func Duration(key string, value time.Duration) Field {
 	return Any(key, value)
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/Andras5014/webook/internal/service"
 	"github.com/Andras5014/webook/pkg/logx"
 	"github.com/Andras5014/webook/pkg/redsyncx"
+	"github.com/go-redsync/redsync/v4"
 	"sync"
 	"time"
 )
@@ -17,11 +18,11 @@ type RankingJob struct {
 	l          logx.Logger
 }
 
-func NewRankingJob(svc service.RankingService, timeout time.Duration, mutex *redsyncx.AutoExtendMutex, l logx.Logger) Job {
+func NewRankingJob(svc service.RankingService, timeout time.Duration, mutex *redsync.Mutex, l logx.Logger) *RankingJob {
 	return &RankingJob{
 		svc:     svc,
 		timeout: timeout,
-		mutex:   mutex,
+		mutex:   redsyncx.NewAutoExtendMutex(mutex),
 		l:       l,
 	}
 }

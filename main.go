@@ -28,6 +28,13 @@ func main() {
 		}
 
 	}
+
+	app.Cron.Start()
+	defer func() {
+		// 等待定时任务推出
+		<-app.Cron.Stop().Done()
+	}()
+
 	server := app.Server
 	server.Run(":8080")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)

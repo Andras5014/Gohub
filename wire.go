@@ -18,6 +18,11 @@ import (
 	"github.com/google/wire"
 )
 
+var rankingSvcSet = wire.NewSet(
+	cache.NewRedisRankingCache,
+	repository.NewRankingRepository,
+	service.NewRankingService,
+)
 var interactiveSvcSet = wire.NewSet(
 	service.NewInteractiveService,
 	repository.NewInteractiveRepository,
@@ -50,6 +55,8 @@ var thirdPartySet = wire.NewSet(
 	ioc.InitLogger,
 	ioc.InitDB,
 	ioc.InitRedis,
+	ioc.InitRedisUniversalClient,
+	ioc.InitRedSync,
 	ioc.InitSmsService,
 	ioc.InitKafka,
 	ioc.InitSyncProducer,
@@ -75,6 +82,11 @@ func InitApp() *App {
 		ioc.InitWebServer,
 		ioc.InitMiddlewares,
 		ioc.InitLimiter,
+
+		// job
+		rankingSvcSet,
+		ioc.InitRankingJob,
+		ioc.InitJobs,
 
 		oauth2.NewOAuth2WeChatHandler,
 		ioc.InitOAuth2WeChatService,
