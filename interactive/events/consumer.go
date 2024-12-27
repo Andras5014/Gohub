@@ -1,9 +1,8 @@
-package article
+package events
 
 import (
 	"context"
-	"github.com/Andras5014/webook/internal/events"
-	"github.com/Andras5014/webook/internal/repository"
+	"github.com/Andras5014/webook/interactive/repository"
 	"github.com/Andras5014/webook/pkg/logx"
 	"github.com/Andras5014/webook/pkg/saramax"
 	"github.com/IBM/sarama"
@@ -11,6 +10,7 @@ import (
 )
 
 const ReadEventConsumerGroup = "article_read_event"
+const TopicReadEvent = "article_read"
 
 type InteractiveReadEventConsumer struct {
 	client sarama.Client
@@ -18,7 +18,7 @@ type InteractiveReadEventConsumer struct {
 	l      logx.Logger
 }
 
-func NewInteractiveReadEventConsumer(client sarama.Client, repo repository.InteractiveRepository, l logx.Logger) events.Consumer {
+func NewInteractiveReadEventConsumer(client sarama.Client, repo repository.InteractiveRepository, l logx.Logger) *InteractiveReadEventConsumer {
 	return &InteractiveReadEventConsumer{
 		client: client,
 		repo:   repo,

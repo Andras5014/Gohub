@@ -3,9 +3,9 @@ package repository
 import (
 	"context"
 	"errors"
-	"github.com/Andras5014/webook/internal/domain"
-	"github.com/Andras5014/webook/internal/repository/cache"
-	"github.com/Andras5014/webook/internal/repository/dao"
+	"github.com/Andras5014/webook/interactive/domain"
+	"github.com/Andras5014/webook/interactive/repository/cache"
+	"github.com/Andras5014/webook/interactive/repository/dao"
 	"github.com/Andras5014/webook/pkg/logx"
 	"github.com/ecodeclub/ekit/slice"
 )

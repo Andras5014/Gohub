@@ -1,9 +1,8 @@
-package article
+package events
 
 import (
 	"context"
-	"github.com/Andras5014/webook/internal/events"
-	"github.com/Andras5014/webook/internal/repository"
+	"github.com/Andras5014/webook/interactive/repository"
 	"github.com/Andras5014/webook/pkg/logx"
 	"github.com/Andras5014/webook/pkg/saramax"
 	"github.com/IBM/sarama"
@@ -16,7 +15,7 @@ type InteractiveReadEventBatchConsumer struct {
 	l      logx.Logger
 }
 
-func NewInteractiveReadEventBatchConsumer(client sarama.Client, repo repository.InteractiveRepository, l logx.Logger) events.Consumer {
+func NewInteractiveReadEventBatchConsumer(client sarama.Client, repo repository.InteractiveRepository, l logx.Logger) *InteractiveReadEventBatchConsumer {
 	return &InteractiveReadEventBatchConsumer{
 		client: client,
 		repo:   repo,

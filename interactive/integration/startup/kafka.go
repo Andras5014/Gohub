@@ -1,8 +1,7 @@
-package ioc
+package startup
 
 import (
 	"github.com/Andras5014/webook/config"
-	events2 "github.com/Andras5014/webook/interactive/events"
 	"github.com/Andras5014/webook/internal/events"
 	"github.com/IBM/sarama"
 )
@@ -25,6 +24,6 @@ func InitSyncProducer(client sarama.Client) sarama.SyncProducer {
 	return producer
 }
 
-func InitConsumers(c *events2.InteractiveReadEventBatchConsumer) []events.Consumer {
+func InitConsumers(c events.Consumer) []events.Consumer {
 	return []events.Consumer{c}
 }

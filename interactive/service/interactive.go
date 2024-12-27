@@ -2,11 +2,12 @@ package service
 
 import (
 	"context"
-	"github.com/Andras5014/webook/internal/domain"
-	"github.com/Andras5014/webook/internal/repository"
+	"github.com/Andras5014/webook/interactive/domain"
+	"github.com/Andras5014/webook/interactive/repository"
 	"github.com/ecodeclub/ekit/slice"
 	"golang.org/x/sync/errgroup"
 )
+
 //go:generate mockgen -destination=mocks/interactive.mock.go -package=svcmocks -source=interactive.go
 type InteractiveService interface {
 	IncrReadCnt(ctx context.Context, biz string, id int64) error
@@ -21,6 +22,9 @@ type interactiveService struct {
 	repo repository.InteractiveRepository
 }
 
+func NewInteractiveService(repo repository.InteractiveRepository) InteractiveService {
+	return &interactiveService{repo: repo}
+}
 func (i *interactiveService) GetByIds(ctx context.Context, biz string, ids []int64) (map[int64]domain.Interactive, error) {
 	intrs, err := i.repo.GetByIds(ctx, biz, ids)
 	if err != nil {
@@ -59,10 +63,6 @@ func (i *interactiveService) Get(ctx context.Context, biz string, id int64, uid 
 
 func (i *interactiveService) Collect(ctx context.Context, biz string, id int64, cid int64, uid int64) error {
 	return i.repo.AddCollectionItem(ctx, biz, id, cid, uid)
-}
-
-func NewInteractiveService(repo repository.InteractiveRepository) InteractiveService {
-	return &interactiveService{repo: repo}
 }
 
 func (i *interactiveService) IncrReadCnt(ctx context.Context, biz string, id int64) error {

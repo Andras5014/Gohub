@@ -7,6 +7,11 @@
 package main
 
 import (
+	"github.com/Andras5014/webook/interactive/events"
+	repository2 "github.com/Andras5014/webook/interactive/repository"
+	cache2 "github.com/Andras5014/webook/interactive/repository/cache"
+	dao2 "github.com/Andras5014/webook/interactive/repository/dao"
+	service2 "github.com/Andras5014/webook/interactive/service"
 	article3 "github.com/Andras5014/webook/internal/events/article"
 	"github.com/Andras5014/webook/internal/repository"
 	article2 "github.com/Andras5014/webook/internal/repository/article"
@@ -55,14 +60,14 @@ func InitApp() *App {
 	syncProducer := ioc.InitSyncProducer(client)
 	producer := article3.NewSaramaSyncProducer(syncProducer)
 	articleService := service.NewArticleService(articleRepository, producer, logger)
-	interactiveDAO := dao.NewInteractiveDAO(db)
-	interactiveCache := cache.NewInteractiveCache(cmdable)
-	interactiveRepository := repository.NewInteractiveRepository(interactiveDAO, interactiveCache, logger)
-	interactiveService := service.NewInteractiveService(interactiveRepository)
+	interactiveDAO := dao2.NewInteractiveDAO(db)
+	interactiveCache := cache2.NewInteractiveCache(cmdable)
+	interactiveRepository := repository2.NewInteractiveRepository(interactiveDAO, interactiveCache, logger)
+	interactiveService := service2.NewInteractiveService(interactiveRepository)
 	articleHandler := article4.NewArticleHandler(articleService, interactiveService, logger)
 	engine := ioc.InitWebServer(v, userHandler, weChatHandler, articleHandler)
-	consumer := article3.NewInteractiveReadEventBatchConsumer(client, interactiveRepository, logger)
-	v2 := ioc.InitConsumers(consumer)
+	interactiveReadEventBatchConsumer := events.NewInteractiveReadEventBatchConsumer(client, interactiveRepository, logger)
+	v2 := ioc.InitConsumers(interactiveReadEventBatchConsumer)
 	rankingService := service.NewRankingService(articleService, interactiveService)
 	universalClient := ioc.InitRedisUniversalClient(config)
 	redsync := ioc.InitRedSync(universalClient)
@@ -80,7 +85,7 @@ func InitApp() *App {
 
 var rankingSvcSet = wire.NewSet(cache.NewRedisRankingCache, repository.NewRankingRepository, service.NewRankingService)
 
-var interactiveSvcSet = wire.NewSet(service.NewInteractiveService, repository.NewInteractiveRepository, cache.NewInteractiveCache, dao.NewInteractiveDAO)
+var interactiveSvcSet = wire.NewSet(service2.NewInteractiveService, repository2.NewInteractiveRepository, cache2.NewInteractiveCache, dao2.NewInteractiveDAO)
 
 var userSvcSet = wire.NewSet(service.NewUserService, repository.NewUserRepository, cache.NewUserCache, dao.NewUserDAO)
 

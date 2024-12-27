@@ -4,7 +4,8 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
-	"github.com/Andras5014/webook/internal/domain"
+	"github.com/Andras5014/webook/interactive/domain"
+
 	"github.com/redis/go-redis/v9"
 	"strconv"
 	"time"
@@ -15,7 +16,7 @@ const fieldLikeCnt = "like_cnt"
 const fieldCollectCnt = "collect_cnt"
 
 var (
-	//go:embed lua/incr_cnt.lua
+	//go:embed  lua/incr_cnt.lua
 	luaIncrCnt string
 )
 

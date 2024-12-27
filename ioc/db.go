@@ -2,6 +2,7 @@ package ioc
 
 import (
 	"github.com/Andras5014/webook/config"
+	dao2 "github.com/Andras5014/webook/interactive/repository/dao"
 	"github.com/Andras5014/webook/internal/repository/dao"
 	"github.com/Andras5014/webook/pkg/gormx"
 	"github.com/Andras5014/webook/pkg/logx"
@@ -66,6 +67,10 @@ func InitDB(cfg *config.Config, l logx.Logger) *gorm.DB {
 		tracing.WithoutQueryVariables()))
 
 	err = dao.InitTable(db)
+	if err != nil {
+		panic(err)
+	}
+	err = dao2.InitTable(db)
 	if err != nil {
 		panic(err)
 	}

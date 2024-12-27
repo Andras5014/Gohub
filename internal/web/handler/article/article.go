@@ -2,6 +2,8 @@ package article
 
 import (
 	"errors"
+	domain2 "github.com/Andras5014/webook/interactive/domain"
+	service2 "github.com/Andras5014/webook/interactive/service"
 	"github.com/Andras5014/webook/internal/domain"
 	"github.com/Andras5014/webook/internal/service"
 	"github.com/Andras5014/webook/internal/web/handler"
@@ -21,11 +23,11 @@ type Handler struct {
 	svc    service.ArticleService
 	logger logx.Logger
 
-	intrSvc service.InteractiveService
+	intrSvc service2.InteractiveService
 	biz     string
 }
 
-func NewArticleHandler(svc service.ArticleService, intrSvc service.InteractiveService, logger logx.Logger) *Handler {
+func NewArticleHandler(svc service.ArticleService, intrSvc service2.InteractiveService, logger logx.Logger) *Handler {
 	return &Handler{
 		svc:     svc,
 		intrSvc: intrSvc,
@@ -188,7 +190,7 @@ func (h *Handler) PubDetail(ctx *gin.Context) (ginx.Result, error) {
 	var (
 		id          int64
 		article     domain.Article
-		interactive domain.Interactive
+		interactive domain2.Interactive
 		eg          errgroup.Group
 		err         error
 	)

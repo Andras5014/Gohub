@@ -3,6 +3,11 @@
 package main
 
 import (
+	"github.com/Andras5014/webook/interactive/events"
+	repository2 "github.com/Andras5014/webook/interactive/repository"
+	cache2 "github.com/Andras5014/webook/interactive/repository/cache"
+	dao2 "github.com/Andras5014/webook/interactive/repository/dao"
+	service2 "github.com/Andras5014/webook/interactive/service"
 	articleEvent "github.com/Andras5014/webook/internal/events/article"
 	"github.com/Andras5014/webook/internal/repository"
 	articleRepo "github.com/Andras5014/webook/internal/repository/article"
@@ -24,10 +29,10 @@ var rankingSvcSet = wire.NewSet(
 	service.NewRankingService,
 )
 var interactiveSvcSet = wire.NewSet(
-	service.NewInteractiveService,
-	repository.NewInteractiveRepository,
-	cache.NewInteractiveCache,
-	dao.NewInteractiveDAO,
+	service2.NewInteractiveService,
+	repository2.NewInteractiveRepository,
+	cache2.NewInteractiveCache,
+	dao2.NewInteractiveDAO,
 )
 
 var userSvcSet = wire.NewSet(
@@ -67,7 +72,7 @@ func InitApp() *App {
 	wire.Build(
 		//event
 		articleEvent.NewSaramaSyncProducer,
-		articleEvent.NewInteractiveReadEventBatchConsumer,
+		events.NewInteractiveReadEventBatchConsumer,
 
 		user.NewUserHandler,
 		userSvcSet,
