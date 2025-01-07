@@ -29,3 +29,7 @@ mock:
 	@mockgen  -package=redismocks -destination=./internal/repository/cache/redismocks/cmdable.go github.com/redis/go-redis/v9 Cmdable
 
 	@go mod tidy
+
+.PHONY: grpc
+grpc:
+	@buf generate api/proto

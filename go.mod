@@ -1,6 +1,6 @@
 module github.com/Andras5014/webook
 
-go 1.22.4
+go 1.23.4
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
@@ -37,6 +37,7 @@ require (
 	go.uber.org/mock v0.4.0
 	go.uber.org/zap v1.21.0
 	golang.org/x/crypto v0.28.0
+	golang.org/x/net v0.30.0
 	golang.org/x/sync v0.8.0
 	gorm.io/driver/mysql v1.5.7
 	gorm.io/gorm v1.25.11
@@ -161,7 +162,6 @@ require (
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/arch v0.11.0 // indirect
 	golang.org/x/exp v0.0.0-20231006140011-7918f672742d // indirect
-	golang.org/x/net v0.30.0 // indirect
 	golang.org/x/oauth2 v0.18.0 // indirect
 	golang.org/x/sys v0.26.0 // indirect
 	golang.org/x/text v0.19.0 // indirect
