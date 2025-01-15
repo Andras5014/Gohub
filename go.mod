@@ -1,6 +1,6 @@
 module github.com/Andras5014/webook
 
-go 1.23.4
+go 1.22.4
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
@@ -39,6 +39,8 @@ require (
 	golang.org/x/crypto v0.28.0
 	golang.org/x/net v0.30.0
 	golang.org/x/sync v0.8.0
+	google.golang.org/grpc v1.63.2
+	google.golang.org/protobuf v1.35.1
 	gorm.io/driver/mysql v1.5.7
 	gorm.io/gorm v1.25.11
 	gorm.io/plugin/opentelemetry v0.1.8
@@ -171,8 +173,6 @@ require (
 	google.golang.org/genproto v0.0.0-20240227224415-6ceb2ff114de // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240311132316-a219d84964c2 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240415180920-8c6c420018be // indirect
-	google.golang.org/grpc v1.63.2 // indirect
-	google.golang.org/protobuf v1.35.1 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

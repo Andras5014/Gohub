@@ -1,0 +1,9 @@
+
+db:
+  dsn: "root:root@tcp(127.0.0.1:13306)/webook"
+redis:
+  addr: "127.0.0.1:6379"
+kafka:
+  addrs: "127.0.0.1:9094"
+grpc:
+  addr: "127.0.0.1:8090"

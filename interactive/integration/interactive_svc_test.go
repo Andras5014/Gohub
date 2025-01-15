@@ -1,6 +1,7 @@
 package integration
 
 import (
+	interactivev1 "github.com/Andras5014/webook/api/proto/gen/interactive/v1"
 	"github.com/Andras5014/webook/interactive/integration/startup"
 	"github.com/Andras5014/webook/interactive/repository/dao"
 	"github.com/redis/go-redis/v9"
@@ -42,7 +43,8 @@ func (s *InteractiveTestSuite) TestIncrReadCnt() {
 		biz   string
 		bizId int64
 
-		wantErr error
+		wantErr  error
+		wantResp *interactivev1.IncrReadCntResponse
 	}{
 		{
 			// DB 和缓存都有数据
@@ -89,8 +91,9 @@ func (s *InteractiveTestSuite) TestIncrReadCnt() {
 				err = s.rdb.Del(ctx, "interactive:test:2").Err()
 				assert.NoError(t, err)
 			},
-			biz:   "test",
-			bizId: 2,
+			biz:      "test",
+			bizId:    2,
+			wantResp: &interactivev1.IncrReadCntResponse{},
 		},
 		{
 			// DB 有数据，缓存没有数据
@@ -132,8 +135,9 @@ func (s *InteractiveTestSuite) TestIncrReadCnt() {
 				assert.NoError(t, err)
 				assert.Equal(t, int64(0), cnt)
 			},
-			biz:   "test",
-			bizId: 3,
+			biz:      "test",
+			bizId:    3,
+			wantResp: &interactivev1.IncrReadCntResponse{},
 		},
 		{
 			name:   "增加成功-都没有",
@@ -159,19 +163,24 @@ func (s *InteractiveTestSuite) TestIncrReadCnt() {
 				assert.NoError(t, err)
 				assert.Equal(t, int64(0), cnt)
 			},
-			biz:   "test",
-			bizId: 4,
+			biz:      "test",
+			bizId:    4,
+			wantResp: &interactivev1.IncrReadCntResponse{},
 		},
 	}
 
 	// 不同于 AsyncSms 服务，我们不需要 mock，所以创建一个就可以
 	// 不需要每个测试都创建
-	svc := startup.InitInteractiveSvc()
+	svc := startup.InitInteractiveGRPCServer()
 	for _, tc := range testCases {
 		s.T().Run(tc.name, func(t *testing.T) {
 			tc.before(t)
-			err := svc.IncrReadCnt(context.Background(), tc.biz, tc.bizId)
+			resp, err := svc.IncrReadCnt(context.Background(), &interactivev1.IncrReadCntRequest{
+				Biz:   tc.biz,
+				BizId: tc.bizId,
+			})
 			assert.Equal(t, tc.wantErr, err)
+			assert.Equal(t, tc.wantResp, resp)
 			tc.after(t)
 		})
 	}

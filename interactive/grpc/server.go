@@ -5,6 +5,7 @@ import (
 	interactivev1 "github.com/Andras5014/webook/api/proto/gen/interactive/v1"
 	"github.com/Andras5014/webook/interactive/domain"
 	"github.com/Andras5014/webook/interactive/service"
+	"google.golang.org/grpc"
 )
 
 type InteractiveServiceServer struct {
@@ -12,6 +13,14 @@ type InteractiveServiceServer struct {
 	interactivev1.UnimplementedInteractiveServiceServer
 }
 
+func (i *InteractiveServiceServer) Register(server *grpc.Server) {
+	interactivev1.RegisterInteractiveServiceServer(server, i)
+}
+func NewInteractiveServiceServer(svc service.InteractiveService) *InteractiveServiceServer {
+	return &InteractiveServiceServer{
+		svc: svc,
+	}
+}
 func (i *InteractiveServiceServer) IncrReadCnt(ctx context.Context, request *interactivev1.IncrReadCntRequest) (*interactivev1.IncrReadCntResponse, error) {
 	err := i.svc.IncrReadCnt(ctx, request.Biz, request.BizId)
 	if err != nil {

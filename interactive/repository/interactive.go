@@ -149,6 +149,8 @@ func (c *CacheInteractiveRepository) DecrLike(ctx context.Context, biz string, i
 
 func (c *CacheInteractiveRepository) toDomain(intrDao dao.Interactive) domain.Interactive {
 	return domain.Interactive{
+		Biz:        intrDao.Biz,
+		BizId:      intrDao.BizId,
 		ReadCnt:    intrDao.ReadCnt,
 		LikeCnt:    intrDao.LikeCnt,
 		CollectCnt: intrDao.CollectCnt,
