@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"errors"
-	service2 "github.com/Andras5014/webook/interactive/service"
+	interactivev1 "github.com/Andras5014/webook/api/proto/gen/interactive/v1"
 	"github.com/Andras5014/webook/internal/domain"
 	"github.com/Andras5014/webook/internal/repository"
 	"github.com/ecodeclub/ekit/queue"
@@ -18,13 +18,13 @@ type RankingService interface {
 
 type BatchRankingService struct {
 	artSvc    ArticleService
-	intrSvc   service2.InteractiveService
+	intrSvc   interactivev1.InteractiveServiceClient
 	batchSize int
 	repo      repository.RankingRepository
 	scoreFunc func(likeCnt int64, updateTime time.Time) float64
 }
 
-func NewRankingService(artSvc ArticleService, intrSvc service2.InteractiveService) RankingService {
+func NewRankingService(artSvc ArticleService, intrSvc interactivev1.InteractiveServiceClient) RankingService {
 	return &BatchRankingService{
 		artSvc:    artSvc,
 		intrSvc:   intrSvc,
@@ -69,14 +69,17 @@ func (b *BatchRankingService) topN(ctx context.Context, n int) ([]domain.Article
 		ids := slice.Map[domain.Article, int64](arts, func(idx int, src domain.Article) int64 {
 			return src.Id
 		})
-		intrs, err := b.intrSvc.GetByIds(ctx, "article", ids)
+		intrs, err := b.intrSvc.GetByIds(ctx, &interactivev1.GetByIdsRequest{
+			Biz:    "article",
+			BizIds: ids,
+		})
 		if err != nil {
 			return nil, err
 		}
 
 		// 计算score
 		for _, art := range arts {
-			intr, ok := intrs[art.Id]
+			intr, ok := intrs.Intrs[art.Id]
 			if !ok {
 				continue
 			}

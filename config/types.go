@@ -6,6 +6,7 @@ type Config struct {
 	Redis RedisConfig `mapstructure:"redis"`
 
 	Kafka KafkaConfig `mapstructure:"kafka"`
+	Grpc  GrpcConfig  `mapstructure:"grpc"`
 }
 type DBConfig struct {
 	DSN string `mapstructure:"dsn"`
@@ -15,4 +16,13 @@ type RedisConfig struct {
 }
 type KafkaConfig struct {
 	Addrs []string `mapstructure:"addrs"`
+}
+type GrpcConfig struct {
+	Client struct {
+		Intr struct {
+			Addr      string `mapstructure:"addr"`
+			Threshold int    `mapstructure:"threshold"`
+			Secure    bool   `mapstructure:"secure"`
+		}
+	}
 }

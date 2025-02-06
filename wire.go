@@ -82,6 +82,7 @@ func InitApp() *App {
 		article.NewArticleHandler,
 		articleSvcSet,
 		interactiveSvcSet,
+		ioc.InitInteractiveGrpcClient,
 		thirdPartySet,
 
 		ioc.InitWebServer,

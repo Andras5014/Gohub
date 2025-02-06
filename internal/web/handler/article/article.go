@@ -2,8 +2,7 @@ package article
 
 import (
 	"errors"
-	domain2 "github.com/Andras5014/webook/interactive/domain"
-	service2 "github.com/Andras5014/webook/interactive/service"
+	interactivev1 "github.com/Andras5014/webook/api/proto/gen/interactive/v1"
 	"github.com/Andras5014/webook/internal/domain"
 	"github.com/Andras5014/webook/internal/service"
 	"github.com/Andras5014/webook/internal/web/handler"
@@ -23,11 +22,11 @@ type Handler struct {
 	svc    service.ArticleService
 	logger logx.Logger
 
-	intrSvc service2.InteractiveService
+	intrSvc interactivev1.InteractiveServiceClient
 	biz     string
 }
 
-func NewArticleHandler(svc service.ArticleService, intrSvc service2.InteractiveService, logger logx.Logger) *Handler {
+func NewArticleHandler(svc service.ArticleService, intrSvc interactivev1.InteractiveServiceClient, logger logx.Logger) *Handler {
 	return &Handler{
 		svc:     svc,
 		intrSvc: intrSvc,
@@ -190,7 +189,7 @@ func (h *Handler) PubDetail(ctx *gin.Context) (ginx.Result, error) {
 	var (
 		id          int64
 		article     domain.Article
-		interactive domain2.Interactive
+		interactive *interactivev1.GetResponse
 		eg          errgroup.Group
 		err         error
 	)
@@ -212,7 +211,11 @@ func (h *Handler) PubDetail(ctx *gin.Context) (ginx.Result, error) {
 
 	eg.Go(func() error {
 
-		interactive, err = h.intrSvc.Get(ctx, h.biz, id, uid)
+		interactive, err = h.intrSvc.Get(ctx, &interactivev1.GetRequest{
+			Biz:   h.biz,
+			BizId: id,
+			Uid:   uid,
+		})
 		return err
 	})
 
@@ -244,11 +247,11 @@ func (h *Handler) PubDetail(ctx *gin.Context) (ginx.Result, error) {
 			Abstract:   article.Abstract(),
 			AuthorId:   article.Author.Id,
 			AuthorName: article.Author.Name,
-			LikeCnt:    interactive.LikeCnt,
-			CollectCnt: interactive.CollectCnt,
-			ReadCnt:    interactive.ReadCnt,
-			Liked:      interactive.Liked,
-			Collected:  interactive.Collected,
+			LikeCnt:    interactive.Intr.LikeCnt,
+			CollectCnt: interactive.Intr.CollectCnt,
+			ReadCnt:    interactive.Intr.ReadCnt,
+			Liked:      interactive.Intr.Liked,
+			Collected:  interactive.Intr.Collected,
 		},
 	}, nil
 }
@@ -258,10 +261,18 @@ func (h *Handler) Like(ctx *gin.Context, req LikeReq) (ginx.Result, error) {
 	var err error
 	if req.Like {
 		// 点赞
-		err = h.intrSvc.Like(ctx, h.biz, req.Id, Uid)
+		_, err = h.intrSvc.Like(ctx, &interactivev1.LikeRequest{
+			Biz:   h.biz,
+			BizId: req.Id,
+			Uid:   Uid,
+		})
 	} else {
 		// 取消点赞
-		err = h.intrSvc.CancelLike(ctx, h.biz, req.Id, Uid)
+		_, err = h.intrSvc.CancelLike(ctx, &interactivev1.CancelLikeRequest{
+			Biz:   h.biz,
+			BizId: req.Id,
+			Uid:   Uid,
+		})
 	}
 	if err != nil {
 		return ginx.SystemError(), err

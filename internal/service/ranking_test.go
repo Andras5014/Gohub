@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
+	interactivev1 "github.com/Andras5014/webook/api/proto/gen/interactive/v1"
 	domain2 "github.com/Andras5014/webook/interactive/domain"
-	service2 "github.com/Andras5014/webook/interactive/service"
 	"github.com/Andras5014/webook/internal/domain"
 	svcmocks "github.com/Andras5014/webook/internal/service/mocks"
 	"github.com/stretchr/testify/assert"
@@ -18,14 +18,14 @@ func TestBatchRankingService_TopN(t *testing.T) {
 	testCases := []struct {
 		name string
 
-		mock func(ctrl *gomock.Controller) (service2.InteractiveService, ArticleService)
+		mock func(ctrl *gomock.Controller) (interactivev1.InteractiveServiceClient, ArticleService)
 
 		wantArts []domain.Article
 		wantErr  error
 	}{
 		{
 			name: "成功获取",
-			mock: func(ctrl *gomock.Controller) (service2.InteractiveService, ArticleService) {
+			mock: func(ctrl *gomock.Controller) (interactivev1.InteractiveServiceClient, ArticleService) {
 				intrSvc := svcmocks.NewMockInteractiveService(ctrl)
 				artSvc := svcmocks.NewMockArticleService(ctrl)
 				// 先模拟批量获取数据

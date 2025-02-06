@@ -70,4 +70,3 @@ func (b *Builder) Build() gin.HandlerFunc {
 		}()
 	}
 }
-fun

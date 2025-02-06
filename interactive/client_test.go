@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	interactivev1 "github.com/Andras5014/webook/api/proto/gen/interactive/v1"
+	"github.com/Andras5014/webook/ioc"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -20,4 +21,9 @@ func TestGRPCClient(t *testing.T) {
 	})
 	require.NoError(t, err)
 	t.Log(resp)
+}
+func TestConfig(t *testing.T) {
+	initViper()
+	cfg := ioc.InitConfig()
+	t.Log(cfg)
 }
