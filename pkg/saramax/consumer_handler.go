@@ -3,7 +3,7 @@ package saramax
 import (
 	"encoding/json"
 	"errors"
-	"github.com/Andras5014/webook/pkg/logx"
+	"github.com/Andras5014/gohub/pkg/logx"
 	"github.com/IBM/sarama"
 )
 

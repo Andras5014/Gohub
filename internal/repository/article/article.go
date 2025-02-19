@@ -2,11 +2,11 @@ package article
 
 import (
 	"context"
-	"github.com/Andras5014/webook/internal/domain"
-	"github.com/Andras5014/webook/internal/repository"
-	"github.com/Andras5014/webook/internal/repository/cache"
-	dao "github.com/Andras5014/webook/internal/repository/dao/article"
-	"github.com/Andras5014/webook/pkg/logx"
+	"github.com/Andras5014/gohub/internal/domain"
+	"github.com/Andras5014/gohub/internal/repository"
+	"github.com/Andras5014/gohub/internal/repository/cache"
+	dao "github.com/Andras5014/gohub/internal/repository/dao/article"
+	"github.com/Andras5014/gohub/pkg/logx"
 	"github.com/ecodeclub/ekit/slice"
 	"time"
 )

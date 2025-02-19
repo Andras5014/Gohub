@@ -2,7 +2,7 @@ version: v1
 managed:
   enabled: true
   go_package_prefix:
-    default: "github.com/Andras5014/webook/api/proto/gen/"
+    default: "github.com/Andras5014/gohub/api/proto/gen/"
 plugins:
   - plugin: buf.build/protocolbuffers/go
     out: api/proto/gen

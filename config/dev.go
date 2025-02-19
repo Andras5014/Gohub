@@ -3,7 +3,7 @@ package config
 // Config mysql redis
 //var Config = config{
 //	DB: DBConfig{
-//		DSN: "root:root@tcp(127.0.0.1:13306)/webook",
+//		DSN: "root:root@tcp(127.0.0.1:13306)/gohub",
 //	},
 //	Redis: RedisConfig{
 //		Addr: "localhost:16379",

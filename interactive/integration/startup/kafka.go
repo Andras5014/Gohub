@@ -1,8 +1,8 @@
 package startup
 
 import (
-	"github.com/Andras5014/webook/config"
-	"github.com/Andras5014/webook/internal/events"
+	"github.com/Andras5014/gohub/config"
+	"github.com/Andras5014/gohub/internal/events"
 	"github.com/IBM/sarama"
 )
 

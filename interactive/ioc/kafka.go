@@ -1,9 +1,9 @@
 package ioc
 
 import (
-	"github.com/Andras5014/webook/interactive/config"
-	"github.com/Andras5014/webook/interactive/events"
-	"github.com/Andras5014/webook/pkg/saramax"
+	"github.com/Andras5014/gohub/interactive/config"
+	"github.com/Andras5014/gohub/interactive/events"
+	"github.com/Andras5014/gohub/pkg/saramax"
 	"github.com/IBM/sarama"
 )
 

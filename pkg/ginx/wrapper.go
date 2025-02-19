@@ -2,7 +2,7 @@ package ginx
 
 import (
 	"fmt"
-	"github.com/Andras5014/webook/pkg/logx"
+	"github.com/Andras5014/gohub/pkg/logx"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus"
 	"net/http"

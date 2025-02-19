@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"github.com/Andras5014/webook/internal/domain"
+	"github.com/Andras5014/gohub/internal/domain"
 )
 
 type HistoryRecordRepository interface {

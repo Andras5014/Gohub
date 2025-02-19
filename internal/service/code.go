@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 	"fmt"
-	"github.com/Andras5014/webook/internal/repository"
-	"github.com/Andras5014/webook/internal/service/sms"
+	"github.com/Andras5014/gohub/internal/repository"
+	"github.com/Andras5014/gohub/internal/service/sms"
 	"math/rand"
 )
 

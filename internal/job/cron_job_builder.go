@@ -2,7 +2,7 @@ package job
 
 import (
 	"context"
-	"github.com/Andras5014/webook/pkg/logx"
+	"github.com/Andras5014/gohub/pkg/logx"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/robfig/cron/v3"
 	"go.opentelemetry.io/otel"
@@ -22,7 +22,7 @@ func NewCronJobBuilder(opt prometheus.SummaryOpts, l logx.Logger) *CronJobBuilde
 	return &CronJobBuilder{
 		p:      p,
 		l:      l,
-		tracer: otel.GetTracerProvider().Tracer("webook/internal/job"),
+		tracer: otel.GetTracerProvider().Tracer("gohub/internal/job"),
 	}
 }
 

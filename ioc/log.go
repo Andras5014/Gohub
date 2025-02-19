@@ -1,7 +1,7 @@
 package ioc
 
 import (
-	"github.com/Andras5014/webook/pkg/logx"
+	"github.com/Andras5014/gohub/pkg/logx"
 	"go.uber.org/zap"
 )
 

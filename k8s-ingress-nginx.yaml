@@ -1,21 +1,21 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: webook-ingress
+  name: gohub-ingress
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
 #  使用nginx
   ingressClassName: nginx
   rules:
-#    host 是webook.com 命中
-    - host: webook.com
+#    host 是gohub.com 命中
+    - host: gohub.com
       http:
         paths:
-#          请求路径是/ 转发到webook
+#          请求路径是/ 转发到gohub
           - backend:
               service:
-                name: webook
+                name: gohub
                 port:
                   number: 81
             pathType: Prefix

@@ -2,9 +2,9 @@ package events
 
 import (
 	"context"
-	"github.com/Andras5014/webook/interactive/repository"
-	"github.com/Andras5014/webook/pkg/logx"
-	"github.com/Andras5014/webook/pkg/saramax"
+	"github.com/Andras5014/gohub/interactive/repository"
+	"github.com/Andras5014/gohub/pkg/logx"
+	"github.com/Andras5014/gohub/pkg/saramax"
 	"github.com/IBM/sarama"
 	"time"
 )

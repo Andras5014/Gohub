@@ -7,11 +7,11 @@
 package startup
 
 import (
-	"github.com/Andras5014/webook/interactive/grpc"
-	"github.com/Andras5014/webook/interactive/repository"
-	"github.com/Andras5014/webook/interactive/repository/cache"
-	"github.com/Andras5014/webook/interactive/repository/dao"
-	"github.com/Andras5014/webook/interactive/service"
+	"github.com/Andras5014/gohub/interactive/grpc"
+	"github.com/Andras5014/gohub/interactive/repository"
+	"github.com/Andras5014/gohub/interactive/repository/cache"
+	"github.com/Andras5014/gohub/interactive/repository/dao"
+	"github.com/Andras5014/gohub/interactive/service"
 	"github.com/google/wire"
 )
 

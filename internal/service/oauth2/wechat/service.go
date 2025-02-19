@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/Andras5014/webook/internal/domain"
-	"github.com/Andras5014/webook/pkg/logx"
+	"github.com/Andras5014/gohub/internal/domain"
+	"github.com/Andras5014/gohub/pkg/logx"
 	"net/http"
 	"net/url"
 )

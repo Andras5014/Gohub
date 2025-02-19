@@ -4,7 +4,7 @@ import (
 	"context"
 	_ "embed"
 	"fmt"
-	"github.com/Andras5014/webook/interactive/domain"
+	"github.com/Andras5014/gohub/interactive/domain"
 
 	"github.com/redis/go-redis/v9"
 	"strconv"

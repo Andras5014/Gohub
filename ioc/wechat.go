@@ -1,9 +1,9 @@
 package ioc
 
 import (
-	"github.com/Andras5014/webook/internal/service/oauth2"
-	"github.com/Andras5014/webook/internal/service/oauth2/wechat"
-	"github.com/Andras5014/webook/pkg/logx"
+	"github.com/Andras5014/gohub/internal/service/oauth2"
+	"github.com/Andras5014/gohub/internal/service/oauth2/wechat"
+	"github.com/Andras5014/gohub/pkg/logx"
 )
 
 func InitOAuth2WeChatService(l logx.Logger) oauth2.Service {

@@ -1,4 +1,4 @@
-module github.com/Andras5014/webook
+module github.com/Andras5014/gohub
 
 go 1.22.4
 

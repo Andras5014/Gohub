@@ -3,7 +3,7 @@ package ratelimit
 import (
 	_ "embed"
 	"fmt"
-	"github.com/Andras5014/webook/pkg/ratelimit"
+	"github.com/Andras5014/gohub/pkg/ratelimit"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"

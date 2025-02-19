@@ -1,9 +1,9 @@
 package integration
 
 import (
-	interactivev1 "github.com/Andras5014/webook/api/proto/gen/interactive/v1"
-	"github.com/Andras5014/webook/interactive/integration/startup"
-	"github.com/Andras5014/webook/interactive/repository/dao"
+	interactivev1 "github.com/Andras5014/gohub/api/proto/gen/interactive/v1"
+	"github.com/Andras5014/gohub/interactive/integration/startup"
+	"github.com/Andras5014/gohub/interactive/repository/dao"
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"

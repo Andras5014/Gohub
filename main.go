@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/Andras5014/webook/ioc"
+	"github.com/Andras5014/gohub/ioc"
 	"github.com/fsnotify/fsnotify"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/pflag"
@@ -83,7 +83,7 @@ func initViperV1() {
 
 func initViperRemote() {
 	viper.SetConfigType("yaml")
-	err := viper.AddRemoteProvider("etcd3", "http://127.0.0.1:12379", "/webook")
+	err := viper.AddRemoteProvider("etcd3", "http://127.0.0.1:12379", "/gohub")
 	if err != nil {
 		return
 	}

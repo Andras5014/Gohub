@@ -2,7 +2,7 @@ package failover
 
 import (
 	"context"
-	"github.com/Andras5014/webook/internal/service/sms"
+	"github.com/Andras5014/gohub/internal/service/sms"
 	"sync/atomic"
 )
 

@@ -2,10 +2,10 @@ package ioc
 
 import (
 	"context"
-	"github.com/Andras5014/webook/internal/domain"
-	"github.com/Andras5014/webook/internal/job"
-	"github.com/Andras5014/webook/internal/service"
-	"github.com/Andras5014/webook/pkg/logx"
+	"github.com/Andras5014/gohub/internal/domain"
+	"github.com/Andras5014/gohub/internal/job"
+	"github.com/Andras5014/gohub/internal/service"
+	"github.com/Andras5014/gohub/pkg/logx"
 	"time"
 )
 

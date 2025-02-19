@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/Andras5014/webook/internal/events"
+	"github.com/Andras5014/gohub/internal/events"
 	"github.com/gin-gonic/gin"
 	"github.com/robfig/cron/v3"
 )

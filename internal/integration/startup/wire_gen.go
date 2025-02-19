@@ -7,17 +7,17 @@
 package startup
 
 import (
-	"github.com/Andras5014/webook/internal/repository"
-	article2 "github.com/Andras5014/webook/internal/repository/article"
-	"github.com/Andras5014/webook/internal/repository/cache"
-	"github.com/Andras5014/webook/internal/repository/dao"
-	"github.com/Andras5014/webook/internal/repository/dao/article"
-	"github.com/Andras5014/webook/internal/service"
-	article3 "github.com/Andras5014/webook/internal/web/handler/article"
-	"github.com/Andras5014/webook/internal/web/handler/oauth2"
-	"github.com/Andras5014/webook/internal/web/handler/user"
-	"github.com/Andras5014/webook/internal/web/jwt"
-	"github.com/Andras5014/webook/ioc"
+	"github.com/Andras5014/gohub/internal/repository"
+	article2 "github.com/Andras5014/gohub/internal/repository/article"
+	"github.com/Andras5014/gohub/internal/repository/cache"
+	"github.com/Andras5014/gohub/internal/repository/dao"
+	"github.com/Andras5014/gohub/internal/repository/dao/article"
+	"github.com/Andras5014/gohub/internal/service"
+	article3 "github.com/Andras5014/gohub/internal/web/handler/article"
+	"github.com/Andras5014/gohub/internal/web/handler/oauth2"
+	"github.com/Andras5014/gohub/internal/web/handler/user"
+	"github.com/Andras5014/gohub/internal/web/jwt"
+	"github.com/Andras5014/gohub/ioc"
 	"github.com/gin-gonic/gin"
 	"github.com/google/wire"
 )

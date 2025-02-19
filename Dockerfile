@@ -1,5 +1,5 @@
 FROM ubuntu:20.04
-COPY webook /app/webook
+COPY gohub /app/gohub
 WORKDIR /app
 
-ENTRYPOINT ["/app/webook"]
+ENTRYPOINT ["/app/gohub"]

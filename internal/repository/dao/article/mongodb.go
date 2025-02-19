@@ -14,7 +14,7 @@ type IDGenerator int64
 
 type MongoDBDAO struct {
 
-	//// 代表webook
+	//// 代表gohub
 	//database *mongo.Database
 
 	// 代表制作库

@@ -2,7 +2,7 @@ package tencent
 
 import (
 	"errors"
-	mysms "github.com/Andras5014/webook/internal/service/sms"
+	mysms "github.com/Andras5014/gohub/internal/service/sms"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 	sms "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/sms/v20210111"

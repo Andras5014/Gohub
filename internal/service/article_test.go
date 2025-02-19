@@ -2,9 +2,9 @@ package service
 
 import (
 	"context"
-	"github.com/Andras5014/webook/internal/domain"
-	"github.com/Andras5014/webook/internal/repository/article"
-	artrepomocks "github.com/Andras5014/webook/internal/repository/article/mocks"
+	"github.com/Andras5014/gohub/internal/domain"
+	"github.com/Andras5014/gohub/internal/repository/article"
+	artrepomocks "github.com/Andras5014/gohub/internal/repository/article/mocks"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 	"testing"

@@ -3,10 +3,10 @@
 
 
 docker:
-	-del /f webook
-	@go build -o webook .
-	@docker rmi -f andras/webook:v0.0.1
-	@docker build -t andras/webook:v0.0.1 .
+	-del /f gohub
+	@go build -o gohub .
+	@docker rmi -f andras/gohub:v0.0.1
+	@docker build -t andras/gohub:v0.0.1 .
 
 .PHONY: mock
 mock:

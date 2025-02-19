@@ -1,7 +1,7 @@
 package aliyun
 
 import (
-	"github.com/Andras5014/webook/internal/service/sms"
+	"github.com/Andras5014/gohub/internal/service/sms"
 	openapi "github.com/alibabacloud-go/darabonba-openapi/v2/client"
 	dysmsapi "github.com/alibabacloud-go/dysmsapi-20170525/v4/client"
 	"github.com/alibabacloud-go/tea/tea"
@@ -31,7 +31,7 @@ func TestService_Send(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	s := NewService(client, "webook")
+	s := NewService(client, "gohub")
 
 	testCases := []struct {
 		name    string

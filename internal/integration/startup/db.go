@@ -3,9 +3,9 @@ package startup
 import (
 	"context"
 	"fmt"
-	"github.com/Andras5014/webook/config"
-	"github.com/Andras5014/webook/internal/repository/dao"
-	"github.com/Andras5014/webook/pkg/logx"
+	"github.com/Andras5014/gohub/config"
+	"github.com/Andras5014/gohub/internal/repository/dao"
+	"github.com/Andras5014/gohub/pkg/logx"
 	"go.mongodb.org/mongo-driver/event"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -55,7 +55,7 @@ func InitMongoDB() *mongo.Database {
 		if err != nil {
 			panic(err)
 		}
-		mongoDB = client.Database("webook")
+		mongoDB = client.Database("gohub")
 	}
 	return mongoDB
 }

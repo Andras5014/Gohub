@@ -1,10 +1,10 @@
 package ioc
 
 import (
-	interactivev1 "github.com/Andras5014/webook/api/proto/gen/interactive/v1"
-	"github.com/Andras5014/webook/config"
-	"github.com/Andras5014/webook/interactive/service"
-	"github.com/Andras5014/webook/internal/web/client"
+	interactivev1 "github.com/Andras5014/gohub/api/proto/gen/interactive/v1"
+	"github.com/Andras5014/gohub/config"
+	"github.com/Andras5014/gohub/interactive/service"
+	"github.com/Andras5014/gohub/internal/web/client"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 	"google.golang.org/grpc"

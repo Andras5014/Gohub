@@ -3,7 +3,7 @@ package cache
 import (
 	"context"
 	"encoding/json"
-	"github.com/Andras5014/webook/internal/domain"
+	"github.com/Andras5014/gohub/internal/domain"
 	"github.com/redis/go-redis/v9"
 	"strconv"
 	"time"

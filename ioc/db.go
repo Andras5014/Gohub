@@ -1,11 +1,11 @@
 package ioc
 
 import (
-	"github.com/Andras5014/webook/config"
-	dao2 "github.com/Andras5014/webook/interactive/repository/dao"
-	"github.com/Andras5014/webook/internal/repository/dao"
-	"github.com/Andras5014/webook/pkg/gormx"
-	"github.com/Andras5014/webook/pkg/logx"
+	"github.com/Andras5014/gohub/config"
+	dao2 "github.com/Andras5014/gohub/interactive/repository/dao"
+	"github.com/Andras5014/gohub/internal/repository/dao"
+	"github.com/Andras5014/gohub/pkg/gormx"
+	"github.com/Andras5014/gohub/pkg/logx"
 	"github.com/prometheus/client_golang/prometheus"
 
 	"gorm.io/driver/mysql"
@@ -24,7 +24,7 @@ func InitDB(cfg *config.Config, l logx.Logger) *gorm.DB {
 		//}),
 	})
 	err = db.Use(gormprometheus.New(gormprometheus.Config{
-		DBName:          "webook",
+		DBName:          "gohub",
 		RefreshInterval: 10,
 		StartServer:     false,
 		MetricsCollector: []gormprometheus.MetricsCollector{
@@ -38,7 +38,7 @@ func InitDB(cfg *config.Config, l logx.Logger) *gorm.DB {
 	callback := gormx.NewCallbacks(prometheus.SummaryOpts{
 
 		Namespace: "andras",
-		Subsystem: "webook",
+		Subsystem: "gohub",
 		Name:      "gorm_db",
 		Help:      "GORM query duration in milliseconds",
 		ConstLabels: map[string]string{

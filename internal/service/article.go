@@ -3,12 +3,13 @@ package service
 import (
 	"context"
 	"errors"
-	"github.com/Andras5014/webook/internal/domain"
-	articleEvent "github.com/Andras5014/webook/internal/events/article"
-	"github.com/Andras5014/webook/internal/repository/article"
-	"github.com/Andras5014/webook/pkg/logx"
+	"github.com/Andras5014/gohub/internal/domain"
+	articleEvent "github.com/Andras5014/gohub/internal/events/article"
+	"github.com/Andras5014/gohub/internal/repository/article"
+	"github.com/Andras5014/gohub/pkg/logx"
 	"time"
 )
+
 //go:generate mockgen -destination=mocks/article.mock.go -package=svcmocks -source=./article.go
 type ArticleService interface {
 	Save(ctx context.Context, article domain.Article) (int64, error)

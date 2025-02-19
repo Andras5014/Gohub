@@ -4,7 +4,7 @@ package wechat
 
 import (
 	"context"
-	"github.com/Andras5014/webook/ioc"
+	"github.com/Andras5014/gohub/ioc"
 	"github.com/stretchr/testify/require"
 	"os"
 	"testing"

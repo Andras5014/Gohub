@@ -1,9 +1,9 @@
 package ioc
 
 import (
-	"github.com/Andras5014/webook/internal/job"
-	"github.com/Andras5014/webook/internal/service"
-	"github.com/Andras5014/webook/pkg/logx"
+	"github.com/Andras5014/gohub/internal/job"
+	"github.com/Andras5014/gohub/internal/service"
+	"github.com/Andras5014/gohub/pkg/logx"
 	"github.com/go-redsync/redsync/v4"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/robfig/cron/v3"

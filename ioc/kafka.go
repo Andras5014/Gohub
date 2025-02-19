@@ -1,9 +1,9 @@
 package ioc
 
 import (
-	"github.com/Andras5014/webook/config"
-	events2 "github.com/Andras5014/webook/interactive/events"
-	"github.com/Andras5014/webook/internal/events"
+	"github.com/Andras5014/gohub/config"
+	events2 "github.com/Andras5014/gohub/interactive/events"
+	"github.com/Andras5014/gohub/internal/events"
 	"github.com/IBM/sarama"
 )
 

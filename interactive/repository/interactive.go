@@ -3,10 +3,10 @@ package repository
 import (
 	"context"
 	"errors"
-	"github.com/Andras5014/webook/interactive/domain"
-	"github.com/Andras5014/webook/interactive/repository/cache"
-	"github.com/Andras5014/webook/interactive/repository/dao"
-	"github.com/Andras5014/webook/pkg/logx"
+	"github.com/Andras5014/gohub/interactive/domain"
+	"github.com/Andras5014/gohub/interactive/repository/cache"
+	"github.com/Andras5014/gohub/interactive/repository/dao"
+	"github.com/Andras5014/gohub/pkg/logx"
 	"github.com/ecodeclub/ekit/slice"
 )
 

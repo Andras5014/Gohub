@@ -1,10 +1,10 @@
 package ioc
 
 import (
-	interactivev1 "github.com/Andras5014/webook/api/proto/gen/interactive/v1"
-	"github.com/Andras5014/webook/interactive/config"
-	grpc2 "github.com/Andras5014/webook/interactive/grpc"
-	"github.com/Andras5014/webook/pkg/grpcx"
+	interactivev1 "github.com/Andras5014/gohub/api/proto/gen/interactive/v1"
+	"github.com/Andras5014/gohub/interactive/config"
+	grpc2 "github.com/Andras5014/gohub/interactive/grpc"
+	"github.com/Andras5014/gohub/pkg/grpcx"
 	"google.golang.org/grpc"
 )
 

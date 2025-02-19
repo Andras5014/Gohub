@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	interactivev1 "github.com/Andras5014/webook/api/proto/gen/interactive/v1"
-	"github.com/Andras5014/webook/ioc"
+	interactivev1 "github.com/Andras5014/gohub/api/proto/gen/interactive/v1"
+	"github.com/Andras5014/gohub/ioc"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"

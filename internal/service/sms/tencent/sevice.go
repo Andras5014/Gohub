@@ -3,7 +3,7 @@ package tencent
 import (
 	"context"
 	"fmt"
-	sms "github.com/Andras5014/webook/internal/service/sms"
+	sms "github.com/Andras5014/gohub/internal/service/sms"
 	"github.com/ecodeclub/ekit"
 	"github.com/ecodeclub/ekit/slice"
 	tencentSms "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/sms/v20210111"

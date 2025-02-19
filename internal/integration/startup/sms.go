@@ -1,10 +1,10 @@
 package startup
 
 import (
-	"github.com/Andras5014/webook/internal/service/sms"
-	"github.com/Andras5014/webook/internal/service/sms/aliyun"
-	"github.com/Andras5014/webook/internal/service/sms/memory"
-	"github.com/Andras5014/webook/internal/service/sms/tencent"
+	"github.com/Andras5014/gohub/internal/service/sms"
+	"github.com/Andras5014/gohub/internal/service/sms/aliyun"
+	"github.com/Andras5014/gohub/internal/service/sms/memory"
+	"github.com/Andras5014/gohub/internal/service/sms/tencent"
 	openapi "github.com/alibabacloud-go/darabonba-openapi/v2/client"
 	dysmsapi "github.com/alibabacloud-go/dysmsapi-20170525/v4/client"
 	"github.com/alibabacloud-go/tea/tea"
@@ -30,7 +30,7 @@ func initSmsTencentService() sms.Service {
 	if err != nil {
 		panic(err)
 	}
-	return tencent.NewService(c, "123456", "webook")
+	return tencent.NewService(c, "123456", "gohub")
 }
 
 func initSmsAliService() sms.Service {
@@ -53,7 +53,7 @@ func initSmsAliService() sms.Service {
 	if err != nil {
 		panic(err)
 	}
-	return aliyun.NewService(client, "webook")
+	return aliyun.NewService(client, "gohub")
 }
 func initSmsMemoryService() sms.Service {
 	return memory.NewService()

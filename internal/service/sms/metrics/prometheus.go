@@ -2,7 +2,7 @@ package metrics
 
 import (
 	"context"
-	"github.com/Andras5014/webook/internal/service/sms"
+	"github.com/Andras5014/gohub/internal/service/sms"
 	"github.com/prometheus/client_golang/prometheus"
 	"time"
 )
@@ -15,7 +15,7 @@ type PrometheusDecorator struct {
 func NewPrometheusDecorator(svc sms.Service) sms.Service {
 	vector := prometheus.NewSummaryVec(prometheus.SummaryOpts{
 		Namespace: "andras",
-		Subsystem: "webook",
+		Subsystem: "gohub",
 		Help:      "sms send duration in seconds",
 		Name:      "sms_send_duration_seconds",
 	}, []string{"biz"})

@@ -3,7 +3,7 @@ package aliyun
 import (
 	"context"
 	"encoding/json"
-	"github.com/Andras5014/webook/internal/service/sms"
+	"github.com/Andras5014/gohub/internal/service/sms"
 	dysmapi "github.com/alibabacloud-go/dysmsapi-20170525/v4/client"
 	dysmsapi "github.com/alibabacloud-go/dysmsapi-20170525/v4/client"
 	"github.com/ecodeclub/ekit/slice"

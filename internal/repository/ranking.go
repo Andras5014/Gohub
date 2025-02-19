@@ -2,8 +2,8 @@ package repository
 
 import (
 	"context"
-	"github.com/Andras5014/webook/internal/domain"
-	"github.com/Andras5014/webook/internal/repository/cache"
+	"github.com/Andras5014/gohub/internal/domain"
+	"github.com/Andras5014/gohub/internal/repository/cache"
 )
 
 type RankingRepository interface {

@@ -2,9 +2,9 @@ package client
 
 import (
 	"context"
-	interactivev1 "github.com/Andras5014/webook/api/proto/gen/interactive/v1"
-	"github.com/Andras5014/webook/interactive/domain"
-	"github.com/Andras5014/webook/interactive/service"
+	interactivev1 "github.com/Andras5014/gohub/api/proto/gen/interactive/v1"
+	"github.com/Andras5014/gohub/interactive/domain"
+	"github.com/Andras5014/gohub/interactive/service"
 	"google.golang.org/grpc"
 )
 

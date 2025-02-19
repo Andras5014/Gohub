@@ -3,9 +3,9 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"github.com/Andras5014/webook/internal/domain"
-	"github.com/Andras5014/webook/internal/repository/cache"
-	"github.com/Andras5014/webook/internal/repository/dao"
+	"github.com/Andras5014/gohub/internal/domain"
+	"github.com/Andras5014/gohub/internal/repository/cache"
+	"github.com/Andras5014/gohub/internal/repository/dao"
 	"time"
 )
 

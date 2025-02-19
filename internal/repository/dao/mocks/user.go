@@ -13,7 +13,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	dao "github.com/Andras5014/webook/internal/repository/dao"
+	dao "github.com/Andras5014/gohub/internal/repository/dao"
 	gomock "go.uber.org/mock/gomock"
 )
 

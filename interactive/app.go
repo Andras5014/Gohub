@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/Andras5014/webook/pkg/grpcx"
-	"github.com/Andras5014/webook/pkg/saramax"
+	"github.com/Andras5014/gohub/pkg/grpcx"
+	"github.com/Andras5014/gohub/pkg/saramax"
 )
 
 type App struct {

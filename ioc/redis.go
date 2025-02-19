@@ -2,7 +2,7 @@ package ioc
 
 import (
 	"context"
-	"github.com/Andras5014/webook/config"
+	"github.com/Andras5014/gohub/config"
 	"github.com/redis/go-redis/v9"
 )
 

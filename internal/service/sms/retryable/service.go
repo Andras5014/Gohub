@@ -3,7 +3,7 @@ package retryable
 import (
 	"context"
 	"errors"
-	"github.com/Andras5014/webook/internal/service/sms"
+	"github.com/Andras5014/gohub/internal/service/sms"
 )
 
 type Service struct {

@@ -1,7 +1,7 @@
 package ioc
 
 import (
-	"github.com/Andras5014/webook/interactive/config"
+	"github.com/Andras5014/gohub/interactive/config"
 	"github.com/redis/go-redis/v9"
 )
 

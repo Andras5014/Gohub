@@ -3,8 +3,8 @@ package ratelimit
 import (
 	"context"
 	"fmt"
-	"github.com/Andras5014/webook/internal/service/sms"
-	"github.com/Andras5014/webook/pkg/ratelimit"
+	"github.com/Andras5014/gohub/internal/service/sms"
+	"github.com/Andras5014/gohub/pkg/ratelimit"
 )
 
 type LimitSmsService struct {

@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"github.com/Andras5014/webook/internal/repository/dao/article"
+	"github.com/Andras5014/gohub/internal/repository/dao/article"
 	"gorm.io/gorm"
 )
 

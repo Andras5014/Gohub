@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: webook-mysql
+  name: gohub-mysql
 spec:
   selector:
-    app: webook-mysql
+    app: gohub-mysql
   ports:
     - protocol: TCP
       port: 13306

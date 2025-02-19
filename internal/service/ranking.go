@@ -3,9 +3,9 @@ package service
 import (
 	"context"
 	"errors"
-	interactivev1 "github.com/Andras5014/webook/api/proto/gen/interactive/v1"
-	"github.com/Andras5014/webook/internal/domain"
-	"github.com/Andras5014/webook/internal/repository"
+	interactivev1 "github.com/Andras5014/gohub/api/proto/gen/interactive/v1"
+	"github.com/Andras5014/gohub/internal/domain"
+	"github.com/Andras5014/gohub/internal/repository"
 	"github.com/ecodeclub/ekit/queue"
 	"github.com/ecodeclub/ekit/slice"
 	"math"

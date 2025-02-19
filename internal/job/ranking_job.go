@@ -2,9 +2,9 @@ package job
 
 import (
 	"context"
-	"github.com/Andras5014/webook/internal/service"
-	"github.com/Andras5014/webook/pkg/logx"
-	"github.com/Andras5014/webook/pkg/redsyncx"
+	"github.com/Andras5014/gohub/internal/service"
+	"github.com/Andras5014/gohub/pkg/logx"
+	"github.com/Andras5014/gohub/pkg/redsyncx"
 	"github.com/go-redsync/redsync/v4"
 	"sync"
 	"time"

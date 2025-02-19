@@ -2,10 +2,10 @@ package service
 
 import (
 	"context"
-	interactivev1 "github.com/Andras5014/webook/api/proto/gen/interactive/v1"
-	domain2 "github.com/Andras5014/webook/interactive/domain"
-	"github.com/Andras5014/webook/internal/domain"
-	svcmocks "github.com/Andras5014/webook/internal/service/mocks"
+	interactivev1 "github.com/Andras5014/gohub/api/proto/gen/interactive/v1"
+	domain2 "github.com/Andras5014/gohub/interactive/domain"
+	"github.com/Andras5014/gohub/internal/domain"
+	svcmocks "github.com/Andras5014/gohub/internal/service/mocks"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 	"testing"

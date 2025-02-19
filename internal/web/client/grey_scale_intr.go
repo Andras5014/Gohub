@@ -2,7 +2,7 @@ package client
 
 import (
 	"context"
-	interactivev1 "github.com/Andras5014/webook/api/proto/gen/interactive/v1"
+	interactivev1 "github.com/Andras5014/gohub/api/proto/gen/interactive/v1"
 	"github.com/ecodeclub/ekit/syncx/atomicx"
 	"google.golang.org/grpc"
 	"math/rand"

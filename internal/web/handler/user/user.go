@@ -2,12 +2,12 @@ package user
 
 import (
 	"errors"
-	"github.com/Andras5014/webook/internal/domain"
-	"github.com/Andras5014/webook/internal/service"
-	"github.com/Andras5014/webook/internal/web/handler"
-	ijwt "github.com/Andras5014/webook/internal/web/jwt"
-	"github.com/Andras5014/webook/internal/web/result"
-	"github.com/Andras5014/webook/pkg/logx"
+	"github.com/Andras5014/gohub/internal/domain"
+	"github.com/Andras5014/gohub/internal/service"
+	"github.com/Andras5014/gohub/internal/web/handler"
+	ijwt "github.com/Andras5014/gohub/internal/web/jwt"
+	"github.com/Andras5014/gohub/internal/web/result"
+	"github.com/Andras5014/gohub/pkg/logx"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"

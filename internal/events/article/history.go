@@ -2,10 +2,10 @@ package article
 
 import (
 	"context"
-	"github.com/Andras5014/webook/internal/domain"
-	"github.com/Andras5014/webook/internal/repository"
-	"github.com/Andras5014/webook/pkg/logx"
-	"github.com/Andras5014/webook/pkg/saramax"
+	"github.com/Andras5014/gohub/internal/domain"
+	"github.com/Andras5014/gohub/internal/repository"
+	"github.com/Andras5014/gohub/pkg/logx"
+	"github.com/Andras5014/gohub/pkg/saramax"
 	"github.com/IBM/sarama"
 	"time"
 )
